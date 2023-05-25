@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Wartungsplan"
+version = "0.2"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "GPLv3"}
+# ...
+dependencies = [
+	"icalendar",
+	"python_dateutil",
+	"recurring_ical_events",
+	"Requests",
+	"python-dateutil",
+]
+
+[project.optional-dependencies]
+otrs = ["pyotrs"]
+
+[project.scripts]
+Wartungsplan = "Wartungsplan:main"

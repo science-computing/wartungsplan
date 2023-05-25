@@ -1,0 +1,21 @@
+[calendar]
+#Directory to ics file. Calendar only needs to be readable.
+directory = /media/shareX/Wartungspläne.ics
+
+[mail]
+server = smtp.example.com
+port = 465
+password = kCHvJeUy4Gd2XgsXXYFqUtjk
+sender = tom_jones@example.com
+recipient = michael_jackson@example.com
+
+[otrs]
+server = http://localhost
+#webservicename = GenericTicketConnectorREST
+username = restapiuser
+password = AiX3sheeIyahf8aaQuah2wio
+tickettitel = Titel
+queue = Queueebene1::Queueebene2
+state = New
+priority = 1 very low
+footer = Ticket automatically created by Wartungsplan
