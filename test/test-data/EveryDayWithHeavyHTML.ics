@@ -1,0 +1,75 @@
+BEGIN:VCALENDAR
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+CREATED:20230501T134416Z
+LAST-MODIFIED:20230501T172421Z
+DTSTAMP:20230501T172421Z
+UID:030e247b-89c9-48f1-87ad-e6f1e1d6d0ba
+SUMMARY:Every day
+RRULE:FREQ=DAILY
+DTSTART;TZID=Europe/Berlin:20230503T181500
+DTEND;TZID=Europe/Berlin:20230503T191500
+TRANSP:OPAQUE
+LOCATION:Left side of the moon (beware the phase)
+DESCRIPTION;ALTREP="data:text/html,%3Cbody%3E%0A%3Cdiv%3E%3Cb%3ET%3C%2Fb%3E
+ %3Cb%3Ehis%20is%20bold%3C%2Fb%3E%3C%2Fdiv%3E%0A%3Cdiv%3E%3Cb%3E%3Cbr%3E%0A%
+ 20%20%3C%2Fb%3E%3C%2Fdiv%3E%0A%3Cdiv%3E%F0%9F%98%89%3C%2Fdiv%3E%0A%3Cblockq
+ uote%3E%0A%20%20%3Cdiv%3EOK%3C%2Fdiv%3E%0A%3C%2Fblockquote%3E%0A%3Cdiv%3E%3
+ Cbr%3E%0A%20%20%3Cdiv%20align%3D%22center%22%3Eformatted%3C%2Fdiv%3E%0A%3Cd
+ iv%20align%3D%22center%22%3E%3Cbr%3E%0A%3C%2Fdiv%3E%0AI'd%20like%20to%20hav
+ e%20this%20as%20a%20%3Ca%20%0Ahref%3D%22https%3A%2F%2Fwww.rapidtables.com%2
+ Fweb%2Fcolor%2Fred-color.html%22%3Elink%3C%2Fa%3E%0A%3Cmain%20style%3D%22pa
+ dding%3A%2026px%200px%200px%3B%20width%3A%201200px%3B%20max-width%3A%201200
+ px%3B%20%0Atext-align%3A%20center%3B%20margin%3A%20auto%3B%20color%3A%20rgb
+ (255%2C%20255%2C%20255)%3B%20%0Afont-family%3A%20Arial%2C%20sans-serif%3B%2
+ 0font-size%3A%2016px%3B%20font-style%3A%20normal%3B%20%0Afont-variant-ligat
+ ures%3A%20normal%3B%20font-variant-caps%3A%20normal%3B%20font-weight%3A%20%
+ 0A400%3B%20letter-spacing%3A%20normal%3B%20orphans%3A%202%3B%20text-indent%
+ 3A%200px%3B%20%0Atext-transform%3A%20none%3B%20white-space%3A%20normal%3B%2
+ 0widows%3A%202%3B%20word-spacing%3A%200px%3B%0A%20-webkit-text-stroke-width
+ %3A%200px%3B%20text-decoration-thickness%3A%20initial%3B%20%0Atext-decorati
+ on-style%3A%20initial%3B%20text-decoration-color%3A%20initial%3B%22%3E%3Csp
+ an%3E%3Cspan%0A%20style%3D%22color%3A%20rgb(255%2C%200%2C%200)%3B%22%3EM%3C
+ %2Fspan%3E%3Cspan%20style%3D%22color%3A%20rgb(255%2C%20%0A128%2C%200)%3B%22
+ %3Ea%3C%2Fspan%3E%3Cspan%20style%3D%22color%3A%20rgb(255%2C%20255%2C%200)%3
+ B%22%3En%3C%2Fspan%3E%3Cspan%20%0Astyle%3D%22color%3A%20rgb(0%2C%20121%2C%2
+ 064)%3B%22%3Ey%3C%2Fspan%3E%3Cspan%20style%3D%22color%3A%20rgb(64%2C%2064%2
+ C%20%0A255)%3B%22%3E%3Cspan%3E%C2%A0%3C%2Fspan%3E%3C%2Fspan%3E%3Cspan%20sty
+ le%3D%22color%3A%20rgb(160%2C%200%2C%20192)%3B%22%3Ef%3C%2Fspan%3E%3Cspan%0
+ A%20style%3D%22color%3A%20rgb(255%2C%200%2C%200)%3B%22%3Eu%3C%2Fspan%3E%3Cs
+ pan%20style%3D%22color%3A%20rgb(255%2C%20%0A128%2C%200)%3B%22%3En%3C%2Fspan
+ %3E%3Cspan%20style%3D%22color%3A%20rgb(255%2C%20255%2C%200)%3B%22%3En%3C%2F
+ span%3E%3Cspan%20%0Astyle%3D%22color%3A%20rgb(0%2C%20121%2C%2064)%3B%22%3Ey
+ %3C%2Fspan%3E%3Cspan%20style%3D%22color%3A%20rgb(64%2C%2064%2C%20%0A255)%3B
+ %22%3E%3Cspan%3E%C2%A0%3C%2Fspan%3E%3C%2Fspan%3E%3Cspan%20style%3D%22color%
+ 3A%20rgb(160%2C%200%2C%20192)%3B%22%3Ec%3C%2Fspan%3E%3Cspan%0A%20style%3D%2
+ 2color%3A%20rgb(255%2C%200%2C%200)%3B%22%3Eo%3C%2Fspan%3E%3Cspan%20style%3D
+ %22color%3A%20rgb(255%2C%20%0A128%2C%200)%3B%22%3El%3C%2Fspan%3E%3Cspan%20s
+ tyle%3D%22color%3A%20rgb(255%2C%20255%2C%200)%3B%22%3Eo%3C%2Fspan%3E%3Cspan
+ %20%0Astyle%3D%22color%3A%20rgb(0%2C%20121%2C%2064)%3B%22%3Er%3C%2Fspan%3E%
+ 3Cspan%20style%3D%22color%3A%20rgb(64%2C%2064%2C%20%0A255)%3B%22%3Es%3C%2Fs
+ pan%3E%3C%2Fspan%3E%3C%2Fmain%3E%0A%3C%2Fdiv%3E%0A%3C%2Fbody%3E":This is bo
+ ld\n\n😉\n\n    OK\n\n\nformatted\n\nI'd like to have this as a link Many
+  funny colors\n
+SEQUENCE:1
+X-MOZ-GENERATION:1
+END:VEVENT
+END:VCALENDAR
