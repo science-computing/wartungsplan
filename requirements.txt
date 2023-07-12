@@ -1,0 +1,4 @@
+icalendar==5.0.4
+python_dateutil==2.8.2
+recurring_ical_events==2.0.2
+Requests==2.29.0
