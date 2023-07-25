@@ -36,6 +36,42 @@ The config file:
     #Directory to ics file. Calendar only needs to be readable.
     directory = /media/shareX/Wartungspläne.ics
 
+### Mode of operation ###
+
+You would create several calendar files according to your need and run them
+regularly using cron or systemd.
+
+The calendars are split first of all by backend then by partition (the group
+of people you want to give access).
+
+ - E-Mail notification
+ - Ticketing system
+
+Then for example four calendars for four responsibilities (teams):
+
+ - Client machine tasks
+ - Server related tasks
+ - Network
+ - Public facing servers
+ - Internal servers
+ - Database servers
+
+Another aproach could be to separate by duration (to run Wartungsplan daily,
+weekly, monthly):
+
+ - Tasks to finish the same day
+ - That week
+ - That month
+
+If you already have different queues set up in your ticketing system you can
+also start from there.
+
+Be careful to not have more calendars than events ;-) 60 events per calender is
+not too much, having to include 12 calenders in Outlook is a disaster, always.
+
+The calendar files are on the local file system, a network share or otherwise
+synchronized/transported.
+
 ### Microsoft Outlook ###
 
 It is strongly recommended to explicitly sync the calendar back to its source:
@@ -99,3 +135,11 @@ The config file:
       --end-date END_DATE, -e END_DATE
                             End Date e.g. 2023-05-03. Default is start-date + 1
                             day. (00:00:00 respectively)
+
+## Contact ##
+
+In case you want or need to contact us in private because you don't want the
+entire world to know, security related issues ... or to just say "Hello":
+
+felix.bauer@eviden.com
+christian.habrom@eviden.com
