@@ -11,11 +11,26 @@ recipient = michael_jackson@example.com
 
 [otrs]
 server = http://localhost
-#webservicename = GenericTicketConnectorREST
 username = restapiuser
 password = AiX3sheeIyahf8aaQuah2wio
+customUser = root@localhost
 tickettitel = Titel
 queue = Queueebene1::Queueebene2
 state = New
 priority = 1 very low
 footer = Ticket automatically created by Wartungsplan
+
+[headers]
+# Configure here the available (allowed) headers with their
+# default value (if present but empty in calendar event)
+#
+# For mail
+X-Priority = 3
+X-TicketID =
+To = example@example.com
+#
+# For OTRS
+tickettitel = Titel
+queue = Queueebene1::Queueebene2
+state = New
+priority = 1 very low

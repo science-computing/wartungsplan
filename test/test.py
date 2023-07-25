@@ -40,12 +40,16 @@ sys.path.append(os.path.dirname(TESTSDIR))
 from src import Wartungsplan
 
 
+# pylint: disable=invalid-name
+# pylint: disable=protected-access
+
+
 class DummyBackend:
     """ Dummy backedn that does noghting """
     def __init__(self, _):
         pass
 
-    def act(self, events, __):
+    def act(self, events):
         """ The action that should be performed
         here nothing """
         return len(events)
@@ -66,9 +70,9 @@ class TestWartungsplan(unittest.TestCase):
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
             wp = Wartungsplan.Wartungsplan("2023-05-01", "2023-05-02", cal, self.b)
-            self.assertEqual(wp.act(), 1)
+            self.assertEqual(wp.run_backend(), 1)
             wp = Wartungsplan.Wartungsplan("2023-05-02", "2023-05-03", cal, self.b)
-            self.assertEqual(wp.act(), 0)
+            self.assertEqual(wp.run_backend(), 0)
 
     def test_every_second_tuesday(self):
         """ One event that takes place every second tuesday of the month """
@@ -76,9 +80,9 @@ class TestWartungsplan(unittest.TestCase):
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
             wp = Wartungsplan.Wartungsplan("2023-05-02", "2023-05-03", cal, self.b)
-            self.assertEqual(wp.act(), 1)
+            self.assertEqual(wp.run_backend(), 1)
             wp = Wartungsplan.Wartungsplan("2023-05-02", "2023-06-06", cal, self.b)
-            self.assertEqual(wp.act(), 2)
+            self.assertEqual(wp.run_backend(), 2)
 
     def test_every_day_with_html(self):
         """ This calendar has an event thats description contains html.
@@ -89,9 +93,9 @@ class TestWartungsplan(unittest.TestCase):
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
             wp = Wartungsplan.Wartungsplan("2023-05-05", "2023-05-06", cal, self.b)
-            self.assertEqual(wp.act(), 1)
+            self.assertEqual(wp.run_backend(), 1)
             wp = Wartungsplan.Wartungsplan("2023-06-01", "2023-07-01", cal, self.b)
-            self.assertEqual(wp.act(), 30)
+            self.assertEqual(wp.run_backend(), 30)
 
     def test_bangkok_timezone(self):
         """ With this test we avoid regression of an error we made handling
@@ -101,9 +105,58 @@ class TestWartungsplan(unittest.TestCase):
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
             wp = Wartungsplan.Wartungsplan("2023-05-03", None, cal, self.b)
-            self.assertEqual(wp.act(), 1)
+            self.assertEqual(wp.run_backend(), 1)
             wp = Wartungsplan.Wartungsplan("2023-05-04", None, cal, self.b)
-            self.assertEqual(wp.act(), 0)
+            self.assertEqual(wp.run_backend(), 0)
+
+
+class TestSendEmail(unittest.TestCase):
+    """ Test the SendEmail backend """
+    def test_split_message(self):
+        """ Test the split_message function """
+        body = """To: test@example.com
+        X-Priority: 1 (Highest)
+
+        Kind creature,"""
+        b = Wartungsplan.SendEmail("")
+        header,text = b._split_message(body)
+        self.assertEqual(header["To"], "test@example.com")
+        self.assertEqual(len(text.split('\n')), 3)
+
+    def test_invalid_header(self):
+        """ Check if a header gets passed throught to the email message
+        if it is not declared in the config as a accepted header. """
+        config = {"mail":{"sender":"","recipient":""},
+                  "headers":{"X-Priority":None}}
+        b = Wartungsplan.SendEmail(config)
+
+        body = """X-Priority: 1 (Highest)
+X-INVALID: yes
+
+Kind creature,"""
+        header,text = b._split_message(body)
+
+        event = {"summary":""}
+        pre_action_object = b._prepare_event(header,text,event)
+        msg = b._apply_headers(header, event, pre_action_object)
+
+        self.assertEqual(msg["X-Priority"], "1 (Highest)")
+        self.assertFalse('X-INVALID' in msg.keys())
+        self.assertEqual(len(text.split('\n')), 2)
+
+
+class TestOtrsApi(unittest.TestCase):
+    """ Test the OtrsApi Backend """
+    def test_split_message(self):
+        """ Test the split_message function """
+        body = """Queue: Ops5
+        Priority: high
+
+        Kind creature,"""
+        b = Wartungsplan.OtrsApi("", False)
+        header,text = b._split_message(body)
+        self.assertEqual(header["Queue"], "Ops5")
+        self.assertEqual(len(text.split('\n')), 3)
 
 
 if __name__ == '__main__':
