@@ -34,6 +34,7 @@ import sys
 import logging
 import configparser
 import smtplib
+import re
 from email.message import EmailMessage
 
 import dateutil.parser
@@ -51,45 +52,21 @@ except ModuleNotFoundError:
 logger = logging.getLogger(__name__)
 
 
-class ListStdout:
-    """ Lists events to stdout """
-    def __init__(self, config):
-        _ = config
-
-    def act(self, events, dry_run=False):
-        """ List all Jobs in given Date """
-        _ = dry_run
-
-        for event in events:
-            print(event.get("summary"))
-            print(event.get("description"))
-            print(event.decoded("dtstart"))
-            print(event.decoded("dtend"))
-            print('-------------------------')
-
-
-class SendEmail:
-    """ Sends events via email to the configured target"""
-    def __init__(self, config):
+class Backend:
+    """ Interface for Wartungsplan backends """
+    def __init__(self, config, dry_run=False):
         self.config = config
+        self.dry_run = dry_run
+        logger.debug("Create backend %s", type(self).__name__)
 
-    def act(self, events, dry_run=False):
-        """ Run the due jobs """
-        sender_address = self.config["sender"]
-        recipient_address = self.config["recipient"]
+    def act(self, events):
+        """ Walks over events splits headers from text, calls subclass
+            implementation to apply headers and possibly prepare an action
+            and finally perform the in subclass implemented action. """
+        # e.g. for the email backend actions_data contains the msg objects
+        actions_data = []
 
-        if len(events) <= 0:
-            logger.info("No events in the given period")
-            return
-
-        # Build Email Messages for each event before sending the mail
-        messages = []
         for event in events:
-            msg = EmailMessage()
-            msg['Subject'] = event.get("summary", "")
-            msg['From'] = sender_address
-            msg['To'] = recipient_address
-
             # the DESCRIPTION only contains txt, no HTML
             # HTML body is contained in
             #  DESCRIPTION;ALTREP="data:text/html or
@@ -98,12 +75,108 @@ class SendEmail:
             # https://www.rfc-editor.org/rfc/rfc5545#section-3.2.1
             data = event.get("description", "")
 
-            msg.set_content(data)
-            messages.append(msg)
-            logger.debug("Email Message created")
+            headers,text = self._split_message(data)
+            pre_action_object = self._prepare_event(headers, text, event)
+            actions_data.append(self._apply_headers(headers, event,
+                                                    pre_action_object))
+        self._perform_action(actions_data)
+
+    def _prepare_event(self, headers, text, event):
+        """ Implemented in the subclass. """
+        _ = headers, event
+        return text
+
+    def _apply_headers(self, headers, event, pre_action_object):
+        """ Possibly implemented in the subclass. """
+        _ = headers, event
+        return pre_action_object
+
+    def _perform_action(self, actions_data):
+        """ Implemented in the subclass. """
+        raise NotImplementedError("Subclass should implement this")
+
+    def _split_message(self, data):
+        """ Returns touple (headers, text) """
+        header = ["[headers]"]
+        text = []
+        header_re = re.compile(r'^[A-Za-z0-9-]*: .*$')
+        header_part = True
+        for line in data.strip('\r').split('\n'): #strip('\r').
+            if header_part and header_re.match(line):
+                logger.debug("Header LINE: %s", line)
+                header.append(line)
+            else:
+                logger.debug("Message LINE: %s", line)
+                header_part = False
+                text.append(line)
+
+        logger.debug("Number of lines: %d header, %d text", len(header),
+                     len(text))
+        headers = configparser.ConfigParser()
+        headers.read_string("\n".join(header))
+
+        # log headers
+        for key in headers:
+            logger.debug("Header: %s: %s", key, headers[key])
+
+        return headers["headers"], '\n'.join(text)
+
+
+class ListStdout(Backend):
+    """ Lists events to stdout """
+    def __init__(self, config, dry_run):
+        _ = config
+        super().__init__(config, dry_run)
+
+    def _prepare_event(self, headers, text, event):
+        text = [str(event.get("summary")),
+                str(event.get("description")),
+                str(event.decoded("dtstart")),
+                str(event.decoded("dtend")),
+                '-------------------------']
+        logger.debug("Event content: %s", text)
+        return '\n'.join(text)
+
+    def _perform_action(self, actions_data):
+        """ List all Jobs in given Date """
+        for data in actions_data:
+            print(data)
+
+
+class SendEmail(Backend):
+    """ Sends events via email to the configured target"""
+    def _prepare_event(self, headers, text, event):
+        sender_address = self.config["mail"]["sender"]
+        recipient_address = self.config["mail"]["recipient"]
+
+        msg = EmailMessage()
+        msg['Subject'] = event.get("summary", "")
+        msg['From'] = sender_address
+        msg['To'] = recipient_address
+
+        msg.set_content(text)
+        logger.debug("Email Message created")
+
+        return msg
+
+    def _apply_headers(self, headers, event, pre_action_object):
+        # add all configured allowed headers
+        msg = pre_action_object
+        for confheader in self.config["headers"].keys():
+            if msg[confheader]:
+                logger.debug("Delete already set header \"%s\"", confheader)
+                del msg[confheader]
+            msg[confheader] = headers.get(confheader,
+                                          self.config["headers"][confheader])
+        return msg
+
+    def _perform_action(self, actions_data):
+        sender_address = self.config["mail"]["sender"]
+        recipient_address = self.config["mail"]["recipient"]
 
         # Check if this is a dry run.
-        if dry_run:
+        messages = actions_data
+        if self.dry_run:
             logger.info("This is a Dry run!")
             for msg in messages:
                 logger.debug("Sending Email")
@@ -112,7 +185,8 @@ class SendEmail:
             logger.info("We are sending the Emails to %s", recipient_address)
 
             logger.debug("Connecting to %s with port %s",
-                         self.config["server"], self.config["port"])
+                         self.config["mail"]["server"],
+                         self.config["mail"]["port"])
             # Connect to Server with SSL from the beginning of the
             # connection. 'context' is an optional argument and can contain a
             # SSLContext that allows configuring various aspects of the secure
@@ -120,51 +194,65 @@ class SendEmail:
             # Read https://docs.python.org/3/library/ssl.html#ssl-security and
             # https://docs.python.org/3/library/ssl.html#ssl.SSLContext for more
             # information.
-            with smtplib.SMTP_SSL(self.config["server"],
-                                  self.config["port"]) as smtp:
+            with smtplib.SMTP_SSL(self.config["mail"]["server"],
+                                  self.config["mail"]["port"]) as smtp:
                 logger.info("Connected to: %s", smtp.sock.getpeername())
                 logger.info("Connection cypher: %s", smtp.sock.cipher())
-                smtp.login(sender_address, self.config["password"])
+                smtp.login(sender_address, self.config["mail"]["password"])
                 for msg in messages:
                     smtp.send_message(msg)
                     logger.info("Email sent")
 
 
-class OtrsApi():
+class OtrsApi(Backend):
     """ Open a ticket in OTRS """
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, config, dry_run):
+        super().__init__(config, dry_run)
         if "pyotrs" not in sys.modules:
             raise ModuleNotFoundError("Install optional dependency pyotrs "
                                       + "(pip install pyotrs)")
 
-    def act(self, events, dry_run=False):
-        """ Open a ticket in OTRS for every event in range """
+    def _prepare_event(self, headers, text, event):
+        options = {
+        "title" : self.config['otrs']['tickettitel'],
+        "queue" : self.config['otrs'].get("queue", "Raw"),
+        "state" : self.config['otrs'].get("state", "new"),
+        "priority" : self.config['otrs']['priority'],
+        "customUser" : self.config['otrs']['customUser']}
 
-        for event in events:
-            new_ticket = pyotrs.Ticket.create_basic(
-                                         Title=self.config['tickettitel'],
-                                         Queue=self.config.get("queue", "Raw"),
-                                         State=self.config.get("state", "new"),
-                                         Priority=self.config['priority'],
-                                         CustomerUser="root@localhost")
-            first_article = pyotrs.Article({"Subject": event.get("summary",""),
-                                            "Body":
-                                              event.get("description","") +
-                                              "\n\n" +
-                                              self.config.get("footer", "")
-                                            })
-            if dry_run:
+        for confheader in self.config["headers"].keys():
+            options[confheader] = headers.get(confheader,
+                                              self.config["headers"][confheader])
+
+        new_ticket = pyotrs.Ticket.create_basic(
+                                     Title=options["title"],
+                                     Queue=options["queue"],
+                                     State=options["state"],
+                                     Priority=options["priority"],
+                                     CustomerUser=options["customUser"])
+        first_article = pyotrs.Article({"Subject": event.get("summary",""),
+                                        "Body":
+                                          text +
+                                          "\n\n" +
+                                          self.config.get("footer", "")
+                                        })
+        return (new_ticket, first_article)
+
+    def _perform_action(self, actions_data):
+        """ Open a ticket in OTRS for every event in range """
+        for event in actions_data:
+            (new_ticket, first_article) = event
+            if self.dry_run:
                 logger.info("new_ticket: %s", new_ticket.to_dct())
                 logger.info("first_article: %s", first_article.to_dct())
             else:
-                client = pyotrs.Client(self.config['server'],
-                                       self.config['username'],
-                                       self.config['password'])
-                logger.info("URL for request %s", client._build_url())
+                client = pyotrs.Client(self.config['otrs']['server'],
+                                       self.config['otrs']['username'],
+                                       self.config['otrs']['password'])
 
+                logger.info("Opening connection to OTRS")
                 if not client.session_create():
-                    logger.ERROR("Session to OTRS could not be opened")
+                    logger.error("Session to OTRS could not be opened")
                     return False
 
                 resp = client.ticket_create(new_ticket, first_article)
@@ -199,11 +287,16 @@ class Wartungsplan:
         self.events = recurring_ical_events.of(calendar).between(
                           self.start_date.astimezone(),
                           self.end_date.astimezone())
-        logger.info("%i Events %s - %s", len(self.events), start_date, end_date)
+        logger.info("%i Events in time range %s - %s", len(self.events),
+                    start_date, end_date)
 
-    def act(self, dry_run=False):
+        if len(self.events) <= 0:
+            logger.info("No events in the given period")
+            return
+
+    def run_backend(self):
         """ Run the routine to perform the backend action """
-        return self.backend.act(self.events, dry_run)
+        return self.backend.act(self.events)
 
 
 def main():
@@ -277,24 +370,27 @@ def main():
 
     with open(directory, encoding = 'utf-8') as calendar:
         calendar = icalendar.Calendar.from_ical(calendar.read())
+        logger.debug("Read calendar file %s", directory)
 
     # call the function selected by action
     if args.action == 'list':
-        backend = ListStdout(None)
+        backend = ListStdout(None, args.dry_run)
     if args.action == 'send':
-        backend = SendEmail(config["mail"])
+        backend = SendEmail({"mail":config["mail"],
+                             "headers":config["headers"]}, args.dry_run)
     if args.action == 'otrs':
-        backend = OtrsApi(config["otrs"])
+        backend = OtrsApi({"otrs":config["otrs"],
+                           "headers":config["headers"]}, args.dry_run)
 
     if not backend:
         raise NameError("Action not found")
 
-    try:
-        wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend)
+    #try:
+    wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend)
 
-        return wartungsplan.act(args.dry_run)
-    except Exception as err:
-        raise SystemExit(err) from err
+    return wartungsplan.run_backend()
+#except Exception as err:
+#        raise SystemExit(err) from err
 
 
 if __name__ == "__main__":
