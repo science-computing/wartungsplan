@@ -13,12 +13,8 @@ action per event like sending an email or opening a ticket.
     python3 -m venv venv
     # enter the venv
     source venv/bin/activate
-    # install dependecies
-    pip install -r requirements.txt
     # install Wartungsplan
-    pip install .
-    # run the test suite
-    test/test.py
+    pip install wartungsplan
 
 
 ## Events from icalendar ##
