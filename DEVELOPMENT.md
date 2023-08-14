@@ -26,3 +26,6 @@ python3 -m build --sdist .
 python3 -m build --wheel .
 twine upload dist/*
 ```
+
+Note: Dev requirements are maintained in `dev-requirements.txt` while runtime
+dependencies are hold in inside `pyproject.toml`.

@@ -5,20 +5,31 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "Wartungsplan"
 version = "0.2.1"
+description = "Manage recurring tasks in ical"
 readme = "README.md"
 requires-python = ">=3.6"
 license = {text = "GPLv3"}
-# ...
+authors = [
+    {name = "Felix Bauer", email = "felix.bauer@atos.net"},
+]
+maintainers = [
+    {name = "Felix Bauer", email = "felix.bauer@eviden.com"},
+    {name = "Christian Habrom", email = "christian.habrom@eviden.com"},
+]
+
 dependencies = [
-	"icalendar",
-	"python_dateutil",
-	"recurring_ical_events",
-	"Requests",
-	"python-dateutil",
+	"icalendar==5.0.4",
+	"python_dateutil==2.8.2",
+	"recurring_ical_events==2.0.2",
+	"Requests==2.29.0",
+	"importlib-metadata==6.8.0",
 ]
 
 [project.optional-dependencies]
-otrs = ["pyotrs"]
+otrs = ["pyotrs==1.0.1"]
+
+[project.urls]
+repository = "https://github.com/science-computing/wartungsplan"
 
 [project.scripts]
 Wartungsplan = "Wartungsplan:main"
