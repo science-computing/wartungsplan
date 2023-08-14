@@ -106,31 +106,35 @@ The config file:
 
 # Examples
 
-    usage: Wartungsplan [-h] [--config CONFIG] [--ics-calendar ICS_CALENDAR]
-                        [--verbose] [--dry-run] [--logfile LOGFILE]
-                        [--start-date START_DATE] [--end-date END_DATE]
-                        {list,send,otrs}
+```
+$ Wartungsplan -h
+usage: Wartungsplan [-h] [--config CONFIG] [--ics-calendar ICS_CALENDAR]
+                    [--verbose] [--dry-run] [--logfile LOGFILE]
+                    [--start-date START_DATE] [--end-date END_DATE]
+                    {version,list,send,otrs}
 
-    positional arguments:
-      {list,send,otrs}
+positional arguments:
+  {version,list,send,otrs}
+                        Just print the version or select the desired action.
 
-    options:
-      -h, --help            show this help message and exit
-      --config CONFIG, -c CONFIG
-                            Directory to different config file. Default is
-                            plan.conf in same Folder as plan.py
-      --ics-calendar ICS_CALENDAR, -i ICS_CALENDAR
-                            Path to the ics calendar (Takes precedence over value
-                            in config)
-      --verbose, -v         More v's more text
-      --dry-run, -d         Don't perform any action
-      --logfile LOGFILE, -w LOGFILE
-                            Write log to file
-      --start-date START_DATE, -s START_DATE
-                            Start Date e.g. 2023-05-02. Default is todays date
-      --end-date END_DATE, -e END_DATE
-                            End Date e.g. 2023-05-03. Default is start-date + 1
-                            day. (00:00:00 respectively)
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        Directory to different config file. Default is
+                        plan.conf in same Folder as plan.py
+  --ics-calendar ICS_CALENDAR, -i ICS_CALENDAR
+                        Path to the ics calendar (Takes precedence over value
+                        in config)
+  --verbose, -v         More v's more text
+  --dry-run, -d         Don't perform any action
+  --logfile LOGFILE, -w LOGFILE
+                        Write log to file
+  --start-date START_DATE, -s START_DATE
+                        Start Date e.g. 2023-05-02. Default is todays date
+  --end-date END_DATE, -e END_DATE
+                        End Date e.g. 2023-05-03. Default is start-date + 1
+                        day. (00:00:00 respectively)
+```
 
 ## Contact ##
 
