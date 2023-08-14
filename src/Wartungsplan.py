@@ -35,6 +35,7 @@ import logging
 import configparser
 import smtplib
 import re
+import importlib.metadata
 from email.message import EmailMessage
 
 import dateutil.parser
@@ -326,10 +327,10 @@ def main():
     # list: List installed jobs
     # send: To call the SendEmail backend
     # This list will grow with more backends
-    actions = ['list', 'send', 'otrs']
-    parser.add_argument('action', choices=actions)
+    actions = ['version', 'list', 'send', 'otrs']
+    parser.add_argument('action', choices=actions, help="Just print the version "\
+                        "or select the desired action.")
     args = parser.parse_args()
-
 
     # Check if we already have a log handler
     if logger.handlers:
@@ -342,6 +343,12 @@ def main():
                         format='%(asctime)s,%(msecs)d %(levelname)s %(message)s',
                         datefmt='%H:%M:%S',
                         level=logging.ERROR)
+
+    # print version and exit
+    if args.action == 'version':
+        version = importlib.metadata.version("Wartungsplan")
+        print("Wartungsplan", version)
+        sys.exit(0)
 
     if args.verbose == 1:
         logger.setLevel(logging.INFO)
