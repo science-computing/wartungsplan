@@ -10,6 +10,11 @@ pip install pyotrs
 
 ## Pypi release
 
+Set the correct version in `pyproject.toml`, set a git tag on the commit, and
+commit to `main`.
+
+Then create and upload the package to Pypi:
+
 ```
 cd /tmp
 python3 -m venv venv
