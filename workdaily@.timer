@@ -1,0 +1,9 @@
+[Unit]
+Description=Run Wartungsplan workdaily
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 08:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
