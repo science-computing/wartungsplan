@@ -1,0 +1,26 @@
+[Unit]
+Description=Wartungsplan recurring tasks from ical
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/path/to/install/dir
+ExecStart=/path/to/install/dir/venv/bin/Wartungsplan -c plan.conf otrs
+
+#ProtectHome=true
+ProtectSystem=full
+ProtectClock=true
+RestrictAddressFamilies=none
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ProtectProc=noaccess
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+PrivateUsers=true
+
+[Install]
+WantedBy=multi-user.target
