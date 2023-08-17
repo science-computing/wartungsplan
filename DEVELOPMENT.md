@@ -29,3 +29,18 @@ twine upload dist/*
 
 Note: Dev requirements are maintained in `dev-requirements.txt` while runtime
 dependencies are hold in inside `pyproject.toml`.
+
+
+## Container
+
+Build:
+
+```
+podman build -t wartungsplan .
+```
+
+Run:
+
+```
+podman run -it -v ./plan.conf:/etc/plan.conf -v ./test.ical:/data/test.ical wartungsplan:latest list
+```
