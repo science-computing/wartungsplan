@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Wartungsplan"
-version = "0.2.2"
+version = "0.2.3"
 description = "Manage recurring tasks in ical"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -33,3 +33,4 @@ repository = "https://github.com/science-computing/wartungsplan"
 
 [project.scripts]
 Wartungsplan = "Wartungsplan:main"
+addEventToIcal = "addEventToIcal:main"
