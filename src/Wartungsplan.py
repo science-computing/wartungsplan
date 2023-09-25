@@ -364,7 +364,7 @@ def main():
 
     # Read Config file with utf-8 encoding (Umlaute ä, ö, ü, ... can be read)
     config = configparser.ConfigParser()
-    with open(args.config, encoding = 'utf-8') as conf:
+    with open(args.config, mode='r', encoding='utf-8') as conf:
         config.read_file(conf)
         logger.debug("Read config %s", args.config)
 
@@ -375,7 +375,7 @@ def main():
     else:
         directory = config["calendar"]["directory"]
 
-    with open(directory, encoding = 'utf-8') as calendar:
+    with open(directory, mode='r', encoding='utf-8') as calendar:
         calendar = icalendar.Calendar.from_ical(calendar.read())
         logger.debug("Read calendar file %s", directory)
 
