@@ -107,6 +107,46 @@ It is strongly recommended to explicitly sync the calendar back to its source:
 
     Send / Receive -> Send all
 
+### A scriptable tool to create events ###
+
+Part of the package is a script `addEventToIcal.py` that helps migration from
+e.g. a cronjob oriented way or any repository or list of definition or
+recurring tasks.
+
+It reads the event body from STDIN and takes arguments to add events to an
+existing calendar or create a new one. Since the body is what comes from STDIN
+the first lines of the input can be headers.
+
+    usage: addEventToIcal [-h] [--start-date START_DATE] [--end-date END_DATE]
+                    [--rrule RRULE] [--start-time START_TIME] [--end-time END_TIME]
+                    [--duration DURATION] --title TITLE calendar_file
+
+    Add events to an iCal file.
+
+    positional arguments:
+      calendar_file         iCal file to add events to
+
+    options:
+      -h, --help            show this help message and exit
+      --start-date START_DATE
+                            Start date in YYYY-MM-DD format. Default is today
+      --end-date END_DATE   End date in YYYY-MM-DD format. Default is none
+      --rrule RRULE         Interval according to rfc5545 e.g. RRULE:FREQ=DAILY
+      --start-time START_TIME
+                            Start time in HH:MM format. Default is 09:00
+      --end-time END_TIME   End time in HH:MM format. Default is 10:00
+      --duration DURATION   HH:MM format. If set replaces --end-time
+      --title TITLE         Event title
+
+#### Rrule ####
+
+A quarterly rule coudl look the following two ways. The first will run every
+three months on the 28th, which could be a weekend. The second will take place
+every twelve weeks on Thursdays:
+
+    RRULE:FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=28
+    RRULE:FREQ=WEEKLY;INTERVAL=12;BYDAY=TH
+
 
 ## Mail ##
 

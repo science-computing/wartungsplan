@@ -32,12 +32,14 @@ import os
 import sys
 import unittest
 import icalendar
+import tempfile
 
 # Add Wartungsplan to PYTHONPATH
 TESTSDIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(TESTSDIR))
 
 from src import Wartungsplan
+from src import addEventToIcal
 
 
 # pylint: disable=invalid-name
@@ -168,6 +170,49 @@ class TestOtrsApi(unittest.TestCase):
         header,text = b._split_message(body)
         self.assertEqual(header["Queue"], "Ops5")
         self.assertEqual(len(text.split('\n')), 3)
+
+
+class TestAddEventToIcal(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        """ Set up common test case resources. """
+        cls.tests_data_dir = os.path.join(TESTSDIR, "test-data")
+        cls.b = DummyBackend(None)
+
+    def test_create_daily_event(self):
+        """ Test inserting a daily event """
+        _, calendar_file = tempfile.mkstemp()
+        os.unlink(calendar_file)
+        addEventToIcal.add_event(calendar_file, '2023-09-25', '',
+                                 {'FREQ':'DAILY'}, '11:00', '', '0:20',
+                                 'Test1', 'Here we go again')
+        with open(calendar_file, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan("2023-09-25", "2023-09-26", cal, self.b)
+            self.assertEqual(wp.run_backend(), 1)
+            wp = Wartungsplan.Wartungsplan("2023-09-26", "2023-09-27", cal, self.b)
+            self.assertEqual(wp.run_backend(), 1)
+        os.unlink(calendar_file)
+
+    def test_create_weekly_event(self):
+        """ Test inserting more weekly events """
+        _, calendar_file = tempfile.mkstemp()
+        os.unlink(calendar_file)
+        addEventToIcal.add_event(calendar_file, '2023-09-25', '',
+                                 {'FREQ':'WEEKLY'}, '11:00', '', '0:20',
+                                 'Test2', 'Here we go again')
+        addEventToIcal.add_event(calendar_file, '2023-09-25', '',
+                                 {'FREQ':'WEEKLY'}, '11:20', '', '0:20',
+                                 'Test3', 'Here we go again')
+        with open(calendar_file, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan("2023-09-25", "2023-09-26", cal, self.b)
+            self.assertEqual(wp.run_backend(), 2)
+            wp = Wartungsplan.Wartungsplan("2023-09-26", "2023-09-27", cal, self.b)
+            self.assertEqual(wp.run_backend(), 0)
+            wp = Wartungsplan.Wartungsplan("2023-10-02", "2023-10-03", cal, self.b)
+            self.assertEqual(wp.run_backend(), 2)
+        os.unlink(calendar_file)
 
 
 if __name__ == '__main__':
