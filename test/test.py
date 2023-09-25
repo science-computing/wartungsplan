@@ -109,6 +109,17 @@ class TestWartungsplan(unittest.TestCase):
             wp = Wartungsplan.Wartungsplan("2023-05-04", None, cal, self.b)
             self.assertEqual(wp.run_backend(), 0)
 
+    def test_every_day_except_one(self):
+        """ The calendar file has one event that takes place every day except
+        the 26.09.2023 to make sure this is handeled correctly. """
+        p = os.path.join(self.tests_data_dir, "EveryDayExcept-2023-09-26.ics")
+        with open(p, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan("2023-09-26", None, cal, self.b)
+            self.assertEqual(wp.run_backend(), 0)
+            wp = Wartungsplan.Wartungsplan("2023-09-30", None, cal, self.b)
+            self.assertEqual(wp.run_backend(), 1)
+
 
 class TestSendEmail(unittest.TestCase):
     """ Test the SendEmail backend """
