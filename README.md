@@ -41,6 +41,30 @@ Systemd can download e.g. using curl.
 For type=oneshot ExecStart commands are executed sequentially
 if commands fail the entire unit fails.
 
+
+### Event headers ###
+
+The calendar events may have in the configuration file defined headers that
+substitute the predefined values.
+
+    [headers]
+    # Configure here the available (allowed) headers with their
+    # default value
+    X-Priority = 3
+    X-TicketID =
+    To = tom@peekabooav.de
+    X-Custom-2 = hehehehehe
+    # For OTRS
+    tickettitel = Titel
+    queue = Queueebene1::Queueebene2
+    state = New
+    priority = 1 very low
+
+Events headers are the first few lines up until an empty line or a line that
+does not match "^[A-Za-z0-9-]*: .*$".
+
+    To: email@example.com
+
 ### Mode of operation ###
 
 You would create several calendar files according to your need and run them
