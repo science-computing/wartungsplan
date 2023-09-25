@@ -34,6 +34,13 @@ The config file:
     #Directory to ics file. Calendar only needs to be readable.
     directory = /media/shareX/Wartungspläne.ics
 
+The direcotry options only allows paths within the file system.
+To include remote calendars mount a share or download the calendar file. The
+calendar is not modified so does not have to be synched back.
+Systemd can download e.g. using curl.
+For type=oneshot ExecStart commands are executed sequentially
+if commands fail the entire unit fails.
+
 ### Mode of operation ###
 
 You would create several calendar files according to your need and run them
