@@ -392,12 +392,12 @@ def main():
     if not backend:
         raise NameError("Action not found")
 
-    #try:
-    wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend)
+    try:
+        wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend)
 
-    return wartungsplan.run_backend()
-#except Exception as err:
-#        raise SystemExit(err) from err
+        return wartungsplan.run_backend()
+    except Exception as err:
+        raise SystemExit(err) from err
 
 
 if __name__ == "__main__":
