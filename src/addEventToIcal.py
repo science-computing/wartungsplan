@@ -117,4 +117,7 @@ def main():
               args.duration, args.title, description)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as err:
+        raise SystemExit(err) from err
