@@ -29,8 +29,10 @@
 
 import argparse
 import sys
+import Wartungsplan
 from datetime import datetime, timedelta
 from icalendar import Calendar, Event
+
 
 def load_existing_calendar(calendar_file):
     """ Load an existing calendar or create a new one """
@@ -41,12 +43,29 @@ def load_existing_calendar(calendar_file):
     except FileNotFoundError:
         return Calendar()
 
+
+def parse_calendar_check(calendar, start_date):
+    """ Create Wartungsplan from calender for today to see if everything seems
+        fine """
+    class DummyBackend:
+        def __init__(self, _):
+            pass
+
+        def act(self, events):
+            return len(events)
+
+    b = DummyBackend(None)
+    wp = Wartungsplan.Wartungsplan(start_date, "", calendar, b)
+    #print(wp.run_backend())
+
+
 def add_event(calendar_file, start_date, end_date, repeat_interval, start_time,
               end_time, duration, title, description):
     """ Create a new event and add it to the calendar """
     existing_cal = load_existing_calendar(calendar_file)
 
     # Parse start and end dates
+    start_date_str = start_date
     start_date = datetime.strptime(start_date, '%Y-%m-%d').astimezone()
     # Only if there is an end
     if end_date:
@@ -71,6 +90,9 @@ def add_event(calendar_file, start_date, end_date, repeat_interval, start_time,
     if repeat_interval:
         cal_event.add('rrule', repeat_interval)
     existing_cal.add_component(cal_event)
+
+    # Check resulting calendar
+    parse_calendar_check(existing_cal, start_date_str)
 
     # Write the updated calendar data to the file
     with open(calendar_file, 'wb') as file:
@@ -109,15 +131,15 @@ def main():
             rrule_property[key.lower()] = value
 
     # Add the event to the calendar
-    print(args.calendar_file, args.start_date, args.end_date,
-              rrule_property, args.start_time, args.end_time,
-              args.duration, args.title, description)
+    #print(args.calendar_file, args.start_date, args.end_date,
+    #          rrule_property, args.start_time, args.end_time,
+    #          args.duration, args.title, description)
     add_event(args.calendar_file, args.start_date, args.end_date,
               rrule_property, args.start_time, args.end_time,
               args.duration, args.title, description)
 
 if __name__ == '__main__':
     try:
-        main()
+        sys.exit(main())
     except Exception as err:
         raise SystemExit(err) from err
