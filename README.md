@@ -26,6 +26,8 @@ Can be edited with Thunderbird or even Outlook with an established
 UI with all posible features of the `Recurrence Rule`
 (https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10).
 
+The first Tuesday every month:
+
 	RRULE:FREQ=MONTHLY;BYDAY=1TU
 
 The config file:
@@ -142,10 +144,12 @@ the first lines of the input can be headers.
 
 A quarterly rule coudl look the following two ways. The first will run every
 three months on the 28th, which could be a weekend. The second will take place
-every twelve weeks on Thursdays:
+every twelve weeks on Thursdays. And the third example - every three months on
+the first Monday:
 
-    RRULE:FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=28
-    RRULE:FREQ=WEEKLY;INTERVAL=12;BYDAY=TH
+    FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=28
+    FREQ=WEEKLY;INTERVAL=12;BYDAY=TH
+    FREQ=MONTHLY;INTERVAL=3;BYDAY=1MO
 
 
 ## Mail ##
