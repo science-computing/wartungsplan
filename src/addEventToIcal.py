@@ -59,7 +59,20 @@ def parse_calendar_check(calendar, start_date):
     #print(wp.run_backend())
 
 
-def add_event(calendar_file, start_date, end_date, repeat_interval, start_time,
+def string_to_rrule(rrule_string):
+    """ Convert the RRULE string to a dictionary if provided """
+    rrule_property = {}
+    rrule_parts = rrule_string.split(';')
+    for part in rrule_parts:
+        if '=' in part:
+            key, value = part.split('=')
+            if ',' in value:
+                value = value.split(',')
+            rrule_property[key.lower()] = value
+    return rrule_property
+
+
+def add_event(calendar_file, start_date, end_date, rrule, start_time,
               end_time, duration, title, description):
     """ Create a new event and add it to the calendar """
     existing_cal = load_existing_calendar(calendar_file)
@@ -87,8 +100,8 @@ def add_event(calendar_file, start_date, end_date, repeat_interval, start_time,
     if end_date:
         cal_event.add('dtend', datetime.combine(end_date, end_time.time()))
     cal_event.add('description', description)
-    if repeat_interval:
-        cal_event.add('rrule', repeat_interval)
+    if rrule:
+        cal_event.add('rrule', string_to_rrule(rrule))
     existing_cal.add_component(cal_event)
 
     # Check resulting calendar
@@ -97,6 +110,7 @@ def add_event(calendar_file, start_date, end_date, repeat_interval, start_time,
     # Write the updated calendar data to the file
     with open(calendar_file, 'wb') as file:
         file.write(existing_cal.to_ical())
+
 
 def main():
     """ Command line argument interface for scriptable use """
@@ -122,20 +136,13 @@ def main():
     # Read event description from stdin
     description = sys.stdin.read().strip()
 
-    # Convert the RRULE string to a dictionary if provided
-    rrule_property = {}
-    if args.rrule:
-        rrule_parts = args.rrule.split(';')
-        for part in rrule_parts:
-            key, value = part.split('=')
-            rrule_property[key.lower()] = value
 
     # Add the event to the calendar
     #print(args.calendar_file, args.start_date, args.end_date,
     #          rrule_property, args.start_time, args.end_time,
     #          args.duration, args.title, description)
     add_event(args.calendar_file, args.start_date, args.end_date,
-              rrule_property, args.start_time, args.end_time,
+              args.rrule, args.start_time, args.end_time,
               args.duration, args.title, description)
 
 if __name__ == '__main__':

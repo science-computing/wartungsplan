@@ -184,13 +184,18 @@ class TestAddEventToIcal(unittest.TestCase):
         _, calendar_file = tempfile.mkstemp()
         os.unlink(calendar_file)
         addEventToIcal.add_event(calendar_file, '2023-09-25', '',
-                                 {'FREQ':'DAILY'}, '11:00', '', '0:20',
+                                 'FREQ=DAILY', '11:00', '', '0:20',
                                  'Test1', 'Here we go again')
+        addEventToIcal.add_event(calendar_file, '2023-09-25', '',
+                                 'FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR;', '11:00',
+                                 '', '0:20', 'Test4', 'H3r3 w3 g0 again')
         with open(calendar_file, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
             wp = Wartungsplan.Wartungsplan("2023-09-25", "2023-09-26", cal, self.b)
-            self.assertEqual(wp.run_backend(), 1)
+            self.assertEqual(wp.run_backend(), 2)
             wp = Wartungsplan.Wartungsplan("2023-09-26", "2023-09-27", cal, self.b)
+            self.assertEqual(wp.run_backend(), 2)
+            wp = Wartungsplan.Wartungsplan("2023-09-30", "2023-10-01", cal, self.b)
             self.assertEqual(wp.run_backend(), 1)
         os.unlink(calendar_file)
 
@@ -199,10 +204,10 @@ class TestAddEventToIcal(unittest.TestCase):
         _, calendar_file = tempfile.mkstemp()
         os.unlink(calendar_file)
         addEventToIcal.add_event(calendar_file, '2023-09-25', '',
-                                 {'FREQ':'WEEKLY'}, '11:00', '', '0:20',
+                                 'FREQ=WEEKLY', '11:00', '', '0:20',
                                  'Test2', 'Here we go again')
         addEventToIcal.add_event(calendar_file, '2023-09-25', '',
-                                 {'FREQ':'WEEKLY'}, '11:20', '', '0:20',
+                                 'FREQ=WEEKLY', '11:20', '', '0:20',
                                  'Test3', 'Here we go again')
         with open(calendar_file, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
@@ -213,6 +218,25 @@ class TestAddEventToIcal(unittest.TestCase):
             wp = Wartungsplan.Wartungsplan("2023-10-02", "2023-10-03", cal, self.b)
             self.assertEqual(wp.run_backend(), 2)
         os.unlink(calendar_file)
+
+    def test_string_to_rrule(self):
+        """ Test value separation """
+        rrules = [
+            ('FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=28',
+             {'freq': 'MONTHLY', 'interval': '3', 'bymonthday': '28'}),
+            ('FREQ=WEEKLY;;INTERVAL=12;BYDAY=TH,MO',
+             {'freq': 'WEEKLY', 'interval': '12', 'byday': ['TH', 'MO']}),
+            (';FREQ=DAILY;;',
+             {'freq': 'DAILY'}),
+            (';',
+             {}),
+            ('Hello',
+             {}),
+            ('',
+             {}),
+        ]
+        for text, parsed  in rrules:
+            self.assertEqual(parsed, addEventToIcal.string_to_rrule(text))
 
 
 if __name__ == '__main__':
