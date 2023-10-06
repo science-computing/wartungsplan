@@ -74,7 +74,7 @@ class Backend:
             #  X-ALT-DESC:FMTTYPE=text/html
             # see also
             # https://www.rfc-editor.org/rfc/rfc5545#section-3.2.1
-            data = event.get("description", "")
+            data = str(event.get("description", ""))
 
             headers,text = self._split_message(data)
             pre_action_object = self._prepare_event(headers, text, event)
@@ -151,7 +151,7 @@ class SendEmail(Backend):
         recipient_address = self.config["mail"]["recipient"]
 
         msg = EmailMessage()
-        msg['Subject'] = event.get("summary", "")
+        msg['Subject'] = str(event['summary'])
         msg['From'] = sender_address
         msg['To'] = recipient_address
 
@@ -215,7 +215,7 @@ class OtrsApi(Backend):
 
     def _prepare_event(self, headers, text, event):
         options = {
-        "title" : self.config['otrs']['tickettitel'],
+        "title" : str(event['summary']),
         "queue" : self.config['otrs'].get("queue", "Raw"),
         "state" : self.config['otrs'].get("state", "new"),
         "priority" : self.config['otrs']['priority'],

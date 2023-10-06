@@ -122,6 +122,17 @@ class TestWartungsplan(unittest.TestCase):
             wp = Wartungsplan.Wartungsplan("2023-09-30", None, cal, self.b)
             self.assertEqual(wp.run_backend(), 1)
 
+    def test_with_outlook_calendar(self):
+        """ oh fuck """
+        p = os.path.join(self.tests_data_dir, "OutlookCalendar-2023-10-06.ics")
+        with open(p, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan("2023-10-06", None, cal, self.b)
+            self.assertTrue('ö' in wp.events[0]["summary"])
+            self.assertEqual(wp.run_backend(), 1)
+            wp = Wartungsplan.Wartungsplan("2023-10-07", None, cal, self.b)
+            self.assertEqual(wp.run_backend(), 3)
+
 
 class TestSendEmail(unittest.TestCase):
     """ Test the SendEmail backend """
