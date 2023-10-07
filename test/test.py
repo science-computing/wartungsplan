@@ -182,6 +182,56 @@ class TestOtrsApi(unittest.TestCase):
         self.assertEqual(header["Queue"], "Ops5")
         self.assertEqual(len(text.split('\n')), 3)
 
+    def test_config_option_priority(self):
+        """ Test how config options get replaces by headers """
+        config = {'otrs':{
+                      'queue':'q1:q2',
+                      'tickettitel':'Title',
+                      'priority':'high',
+                      'customUser':'Tom'},
+                  }
+        b = Wartungsplan.OtrsApi(config, True)
+
+        # config value
+        body = ''
+        header,text = b._split_message(body)
+        event = {'summary':'One '}
+        ticket, article = b._prepare_event(header,text,event)
+        ticket = ticket.to_dct()
+        article = article.to_dct()
+        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q1:q2', 'State': 'New',
+                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+        a1 = {'Subject': 'One ', 'Body': '\n\n'}
+        self.assertEqual(ticket, t1)
+        self.assertEqual(article, a1)
+
+        # header config
+        config['headers'] = {'queue':'q3:q4'}
+        body = ''
+        header,text = b._split_message(body)
+        event = {'summary':'One '}
+        ticket, article = b._prepare_event(header,text,event)
+        ticket = ticket.to_dct()
+        article = article.to_dct()
+        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q3:q4', 'State': 'New',
+                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+        a1 = {'Subject': 'One ', 'Body': '\n\n'}
+        self.assertEqual(ticket, t1)
+        self.assertEqual(article, a1)
+
+        # header in event
+        body = 'queue: q5:q6'
+        header,text = b._split_message(body)
+        event = {'summary':'One '}
+        ticket, article = b._prepare_event(header,text,event)
+        ticket = ticket.to_dct()
+        article = article.to_dct()
+        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q5:q6', 'State': 'New',
+                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+        a1 = {'Subject': 'One ', 'Body': '\n\n'}
+        self.assertEqual(ticket, t1)
+        self.assertEqual(article, a1)
+
 
 class TestAddEventToIcal(unittest.TestCase):
     @classmethod
