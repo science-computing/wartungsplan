@@ -346,8 +346,9 @@ def main():
                         level=logging.ERROR)
 
     # print version and exit
+    version = importlib.metadata.version('Wartungsplan')
+    logger.debug('Wartungsplan version %s', version)
     if args.action == 'version':
-        version = importlib.metadata.version("Wartungsplan")
         print("Wartungsplan", version)
         sys.exit(0)
 

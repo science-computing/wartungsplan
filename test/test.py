@@ -234,6 +234,7 @@ class TestOtrsApi(unittest.TestCase):
 
 
 class TestAddEventToIcal(unittest.TestCase):
+    """ Test tool to add event or create new calendar """
     @classmethod
     def setUpClass(cls):
         """ Set up common test case resources. """
