@@ -103,6 +103,9 @@ class Backend:
         header_re = re.compile(r'^[A-Za-z0-9-]*: .*$')
         header_part = True
         for line in data.strip('\r').split('\n'): #strip('\r').
+            if header_part and '=' in line:
+                logger.warning('This is likely a mistake: ' +
+                               '"=" found but ":" expected for header keys')
             if header_part and header_re.match(line):
                 logger.debug("Header LINE: %s", line)
                 header.append(line)
@@ -232,7 +235,7 @@ class OtrsApi(Backend):
                                      State=options["state"],
                                      Priority=options["priority"],
                                      CustomerUser=options["customUser"])
-        first_article = pyotrs.Article({"Subject": event.get("summary",""),
+        first_article = pyotrs.Article({'Subject': options['title'],
                                         "Body":
                                           text +
                                           "\n\n" +
