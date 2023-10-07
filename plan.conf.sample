@@ -1,6 +1,6 @@
 [calendar]
-#Directory to ics file. Calendar only needs to be readable.
-directory = /media/shareX/Wartungspläne.ics
+#Path to ics file. Calendar only needs to be readable.
+calendarfile = /media/shareX/Wartungspläne.ics
 
 [mail]
 server = smtp.example.com
@@ -13,24 +13,24 @@ recipient = michael_jackson@example.com
 server = http://localhost
 username = restapiuser
 password = AiX3sheeIyahf8aaQuah2wio
-customUser = root@localhost
-tickettitel = Titel
-queue = Queueebene1::Queueebene2
-state = New
-priority = 1 very low
-footer = Ticket automatically created by Wartungsplan
+#customUser = root@localhost
+#tickettitel = Titel
+#queue = Queueebene1::Queueebene2
+#state = New
+#priority = 1 very low
+#footer = Ticket automatically created by Wartungsplan
 
 [headers]
 # Configure here the available (allowed) headers with their
-# default value (if present but empty in calendar event)
+# default value (effective if present but empty in calendar event)
 #
 # For mail
-X-Priority = 3
-X-TicketID =
-To = example@example.com
+#X-Priority = 3
+#X-TicketID =
+#To = example@example.com
 #
 # For OTRS
-tickettitel = Titel
-queue = Queueebene1::Queueebene2
-state = New
-priority = 1 very low
+#tickettitel = Titel
+#queue = Queueebene1::Queueebene2
+#state = New
+#priority = 1 very low

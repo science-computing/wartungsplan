@@ -216,14 +216,15 @@ class OtrsApi(Backend):
     def _prepare_event(self, headers, text, event):
         options = {
         "title" : str(event['summary']),
-        "queue" : self.config['otrs'].get("queue", "Raw"),
-        "state" : self.config['otrs'].get("state", "new"),
-        "priority" : self.config['otrs']['priority'],
-        "customUser" : self.config['otrs']['customUser']}
+        'queue' : self.config['otrs'].get('queue', 'Queueebene1::Queueebene2'),
+        'state' : self.config['otrs'].get('state', 'New'),
+        'priority' : self.config['otrs'].get('priority', '1 very low'),
+        'customUser' : self.config['otrs'].get('customUser', 'root@localhost')}
 
-        for confheader in self.config["headers"].keys():
-            options[confheader] = headers.get(confheader,
-                                              self.config["headers"][confheader])
+        if 'headers' in self.config:
+            for confheader in self.config['headers'].keys():
+                options[confheader] = headers.get(confheader,
+                                                  self.config["headers"][confheader])
 
         new_ticket = pyotrs.Ticket.create_basic(
                                      Title=options["title"],
@@ -370,14 +371,14 @@ def main():
 
     # Get calendar location from argument
     if args.ics_calendar:
-        directory = args.ics_calendar
+        calendarfile = args.ics_calendar
     # Get calendar location from config
     else:
-        directory = config["calendar"]["directory"]
+        calendarfile = config["calendar"]["calendarfile"]
 
-    with open(directory, mode='r', encoding='utf-8') as calendar:
+    with open(calendarfile, mode='r', encoding='utf-8') as calendar:
         calendar = icalendar.Calendar.from_ical(calendar.read())
-        logger.debug("Read calendar file %s", directory)
+        logger.debug("Read calendar file %s", calendarfile)
 
     # call the function selected by action
     if args.action == 'list':
