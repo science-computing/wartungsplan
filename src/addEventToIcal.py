@@ -45,18 +45,19 @@ def load_existing_calendar(calendar_file):
 
 
 def parse_calendar_check(calendar, start_date):
-    """ Create Wartungsplan from calender for today to see if everything seems
-        fine """
+    """ Create Wartungsplan from calender for today to have everything parsed
+        and see if everything seems fine """
     class DummyBackend:
+        """ Empty dummy backend """
         def __init__(self, _):
-            pass
+            """ Backend classes have one argument so we need to implement """
 
         def act(self, events):
+            """ For easy verification return number of events pased """
             return len(events)
 
-    b = DummyBackend(None)
-    wp = Wartungsplan.Wartungsplan(start_date, "", calendar, b)
-    #print(wp.run_backend())
+    back = DummyBackend(None)
+    Wartungsplan.Wartungsplan(start_date, "", calendar, back)
 
 
 def string_to_rrule(rrule_string):
