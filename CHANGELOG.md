@@ -2,6 +2,10 @@
 
 ## Under development
 
+ -
+
+## Version 0.4
+
  - RRules now support lists like BYDAY=MO,TU,WE
  - The directory option in config now has the more explanatory name calendarfile
  - The config option ticekttitel no longer exists since it should always be
