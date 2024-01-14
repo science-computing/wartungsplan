@@ -31,8 +31,8 @@ import logging
 import os
 import sys
 import unittest
-import icalendar
 import tempfile
+import icalendar
 
 # Add Wartungsplan to PYTHONPATH
 TESTSDIR = os.path.dirname(os.path.abspath(__file__))
@@ -186,7 +186,6 @@ class TestOtrsApi(unittest.TestCase):
         """ Test how config options get replaces by headers """
         config = {'otrs':{
                       'queue':'q1:q2',
-                      'tickettitel':'Title',
                       'priority':'high',
                       'customUser':'Tom'},
                   }
@@ -207,28 +206,44 @@ class TestOtrsApi(unittest.TestCase):
 
         # header config
         config['headers'] = {'queue':'q3:q4'}
-        body = ''
+        body = 'queue: q'
         header,text = b._split_message(body)
         event = {'summary':'One '}
         ticket, article = b._prepare_event(header,text,event)
         ticket = ticket.to_dct()
         article = article.to_dct()
-        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q3:q4', 'State': 'New',
+        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q', 'State': 'New',
                          'Priority': 'high', 'CustomerUser': 'Tom'}}
         a1 = {'Subject': 'One ', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
 
         # header in event
-        body = 'queue: q5:q6'
+        config['headers'] = {'queue':'q3:q4'}
+        body = 'queue: ä5:ä6'
         header,text = b._split_message(body)
         event = {'summary':'One '}
         ticket, article = b._prepare_event(header,text,event)
         ticket = ticket.to_dct()
         article = article.to_dct()
-        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q5:q6', 'State': 'New',
+        t1 = {'Ticket': {'Title': 'One ', 'Queue': 'ä5:ä6', 'State': 'New',
                          'Priority': 'high', 'CustomerUser': 'Tom'}}
         a1 = {'Subject': 'One ', 'Body': '\n\n'}
+        self.assertEqual(ticket, t1)
+        self.assertEqual(article, a1)
+
+        config['headers'] = {'queue':'q3:q4', 'title':'noTitle'}
+        body = """title: asdf
+queue: q5:q6
+not: allowed"""
+        header,text = b._split_message(body)
+        event = {'summary':'Two '}
+        ticket, article = b._prepare_event(header,text,event)
+        ticket = ticket.to_dct()
+        article = article.to_dct()
+        t1 = {'Ticket': {'Title': 'asdf', 'Queue': 'q5:q6', 'State': 'New',
+                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+        a1 = {'Subject': 'asdf', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
 
