@@ -172,6 +172,13 @@ class SendEmail(Backend):
                 del msg[confheader]
             msg[confheader] = headers.get(confheader,
                                           self.config["headers"][confheader])
+
+        # Warnings for use of not permitted headers
+            if confheader in headers:
+                del headers[confheader]
+        for unmatched_header in headers.keys():
+            logger.warning('Use of not permitted header: %s', unmatched_header)
+
         return msg
 
     def _perform_action(self, actions_data):
@@ -228,6 +235,12 @@ class OtrsApi(Backend):
             for confheader in self.config['headers'].keys():
                 options[confheader] = headers.get(confheader,
                                                   self.config["headers"][confheader])
+
+            # Warnings for use of not permitted headers
+                if confheader in headers:
+                    del headers[confheader]
+            for unmatched_header in headers.keys():
+                logger.warning('Use of not permitted header: %s', unmatched_header)
 
         new_ticket = pyotrs.Ticket.create_basic(
                                      Title=options["title"],
