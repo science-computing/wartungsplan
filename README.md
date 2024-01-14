@@ -34,11 +34,11 @@ The config file:
 
     [calendar]
     #Directory to ics file. Calendar only needs to be readable.
-    directory = /media/shareX/Wartungspläne.ics
+    calendarfile = /media/shareX/Wartungspläne.ics
 
-The direcotry options only allows paths within the file system.
+The calendarfile option only allows paths within the file system.
 To include remote calendars mount a share or download the calendar file. The
-calendar is not modified so does not have to be synched back.
+calendar is not modified so does not have to be synced back.
 Systemd can download e.g. using curl.
 For type=oneshot ExecStart commands are executed sequentially
 if commands fail the entire unit fails.
@@ -62,7 +62,7 @@ substitute the predefined values.
     state = New
     priority = 1 very low
 
-Events headers are the first few lines up until an empty line or a line that
+Event headers are the first few lines up until an empty line or a line that
 does not match "^[A-Za-z0-9-]*: .*$".
 
     To: email@example.com
@@ -142,7 +142,7 @@ the first lines of the input can be headers.
 
 #### Rrule ####
 
-A quarterly rule coudl look the following two ways. The first will run every
+A quarterly rule could look the following two ways. The first will run every
 three months on the 28th, which could be a weekend. The second will take place
 every twelve weeks on Thursdays. And the third example - every three months on
 the first Monday:
@@ -153,7 +153,17 @@ the first Monday:
     FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR
 
 
-## Mail ##
+## Backends ##
+
+### List ###
+
+Lists due events on the terminal.
+
+The List backend ignores headers.
+
+### Mail ###
+
+Send an email for every event due.
 
 The config file:
 
@@ -164,7 +174,7 @@ The config file:
     sender = tom_jones@example.com
     recipient = michael_jackson@example.com
 
-## OTRS ##
+### OTRS ###
 
 For documentation on how to set up the OTRS side please refer to pyotrs
 documentation: <https://pypi.org/project/PyOTRS/>
@@ -176,10 +186,8 @@ The config file:
 
     [otrs]
     server = http://localhost
-    webservicename = AutomaticTicketCreationForRecurringTasks
     username = restapiuser
     password = AiX3sheeIyahf8aaQuah2wio
-    tickettitel = Titel
     queue = Queueebene1::Queueebene2
     state = New
     priority = 1 very low
