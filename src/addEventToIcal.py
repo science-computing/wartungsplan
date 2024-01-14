@@ -29,9 +29,9 @@
 
 import argparse
 import sys
-import Wartungsplan
 from datetime import datetime, timedelta
 from icalendar import Calendar, Event
+import Wartungsplan
 
 
 def load_existing_calendar(calendar_file):
