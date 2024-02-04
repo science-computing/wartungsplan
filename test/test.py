@@ -33,6 +33,7 @@ import sys
 import unittest
 import tempfile
 import icalendar
+import requests
 
 # Add Wartungsplan to PYTHONPATH
 TESTSDIR = os.path.dirname(os.path.abspath(__file__))
@@ -246,6 +247,46 @@ not: allowed"""
         a1 = {'Subject': 'asdf', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
+
+
+class TestWebhook(unittest.TestCase):
+    """ Test Webhook backend """
+    @classmethod
+    def setUpClass(cls):
+        """ Set up common test case resources. """
+        cls.config = {"webhook": {"url": "http://127.0.0.1:1234/I/don't/get/it"}}
+
+    def test_data_structure(self):
+        """ Set up common test case resources. """
+        message_data = {
+            "text": "Summary: Some dummy text",
+            "format": "text",
+            "displayName": "Wartungsplan"
+        }
+        webhook_backend = Wartungsplan.CallWebhook(self.config, False)
+
+        message_data2 = webhook_backend._prepare_event(None,"Some dummy text",
+                                                       {'summary': "Summary"})
+        self.assertTrue(message_data == message_data2)
+
+        message_data2 = webhook_backend._prepare_event(None, "Some dummy\n text",
+                                                       {'summary': "Summary"})
+        self.assertTrue(len(message_data2["text"].splitlines()) == 2)
+
+    def test_action(self):
+        """ Check for correct error handling. """
+        webhook_backend = Wartungsplan.CallWebhook(self.config, False)
+        message_data = webhook_backend._prepare_event(None, "Some dummy text",
+                                                      {'summary': "Summary"})
+        with self.assertRaises(requests.exceptions.ConnectionError):
+            webhook_backend._perform_action(message_data, 0)
+
+        config = {"webhook": {"url": None}}
+        webhook_backend = Wartungsplan.CallWebhook(config, False)
+        message_data = webhook_backend._prepare_event(None, "Some dummy text",
+                                                      {'summary': "Summary"})
+        with self.assertRaises(requests.exceptions.MissingSchema):
+            webhook_backend._perform_action(message_data, 0)
 
 
 class TestAddEventToIcal(unittest.TestCase):

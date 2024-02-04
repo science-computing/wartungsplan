@@ -23,6 +23,9 @@ password = AiX3sheeIyahf8aaQuah2wio
 #priority = 5 very high
 #footer = Ticket automatically created by Wartungsplan
 
+[webhook]
+url = https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/96..34kh
+
 [headers]
 # Configure here the available (allowed) headers with their
 # default value (defaults overwrite backend options)

@@ -32,12 +32,15 @@ import argparse
 import datetime
 import sys
 import logging
+import json
 import configparser
 import smtplib
 import re
+import time
 import importlib.metadata
 from email.message import EmailMessage
 
+import requests
 import dateutil.parser
 import icalendar
 # under active development, few issues, nothing major
@@ -280,6 +283,75 @@ class OtrsApi(Backend):
         return True
 
 
+class CallWebhook(Backend):
+    """ Sends events to a webhook:
+        this is specific to Matrix webhooks and might not work with other
+        webhooks.
+        Once established this will become a parent class and _prepare_event
+        will be overwritten by child classes. """
+    def _prepare_event(self, headers, text, event):
+        summary = event['summary']
+        message_data = {
+            "text": f"{summary}: {text}",
+            "format": "text",
+            "displayName": "Wartungsplan"
+        }
+        return message_data
+
+    def _perform_action(self, actions_data, retries=3):
+        webhook_url = self.config["webhook"]["url"]
+
+        # Check if this is a dry run.
+        messages = actions_data
+        if self.dry_run:
+            logger.info("This is a Dry run!")
+            for msg in messages:
+                logger.debug("Calling webhook")
+                print(msg)
+                return True
+        else:
+            logger.info("We are calling the webhook")
+
+            # Convert the message data to JSON
+            for msg in messages:
+                message_json = json.dumps(msg)
+                logger.debug("Sending data to webhook \"%s\"", message_json)
+
+                # Set the headers for the HTTP request
+                headers = {
+                    "Content-Type": "application/json",
+                }
+
+                # Send the message using an HTTP POST request
+                error = None
+                for iteration in range(0, retries+1):
+                    time.sleep(iteration)
+                    try:
+                        response = requests.post(webhook_url, data=message_json,
+                                                 headers=headers, verify=False,
+                                                 timeout=5)
+                        response.raise_for_status()  # Check for any HTTP errors
+                        logger.info("Message sent successfully!")
+                    except requests.Timeout as err:
+                        logger.error("Connection timeout: %s", err)
+                        error = err
+                        continue
+                    except requests.exceptions.ConnectionError as err:
+                        logger.error("Connection error: %s", err)
+                        error = err
+                        continue
+                    except requests.exceptions.RequestException as err:
+                        logger.error("An error occurred: %s", err)
+                        # this can't be reasonably retried
+                        raise err
+                    # it worked so clear error
+                    error = None
+                    break
+                # it didn't work -> raise the error
+                if error:
+                    raise error
+
+
 class Wartungsplan:
     """ Builds the events for the given range and allow to call
         into the backend """
@@ -344,7 +416,7 @@ def main():
     # list: List installed jobs
     # send: To call the SendEmail backend
     # This list will grow with more backends
-    actions = ['version', 'list', 'send', 'otrs']
+    actions = ['version', 'list', 'send', 'otrs', 'webhook']
     parser.add_argument('action', choices=actions, help="Just print the version "\
                         "or select the desired action.")
     args = parser.parse_args()
@@ -405,6 +477,9 @@ def main():
                              "headers":config["headers"]}, args.dry_run)
     if args.action == 'otrs':
         backend = OtrsApi({"otrs":config["otrs"],
+                           "headers":config["headers"]}, args.dry_run)
+    if args.action == 'webhook':
+        backend = CallWebhook({"webhook":config["webhook"],
                            "headers":config["headers"]}, args.dry_run)
 
     if not backend:
