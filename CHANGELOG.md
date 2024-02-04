@@ -2,7 +2,7 @@
 
 ## Under development
 
- -
+ - Add Matrix webhook backend
 
 ## Version 0.4
 

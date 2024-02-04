@@ -193,6 +193,11 @@ The config file:
     priority = 1 very low
     footer = Ticket automatically created by Wartungsplan
 
+### Matrix webhook ###
+
+Add the correct webhook URL the config file and select the webhook backend.
+Done!
+
 # Examples
 
 ```
