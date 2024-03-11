@@ -109,6 +109,16 @@ It is strongly recommended to explicitly sync the calendar back to its source:
 
     Send / Receive -> Send all
 
+### A tool to download calendars from Microsoft Exchange
+
+`tools/downloadExchange.py` and its configuration file `exchange.conf` can be
+used to download a calendar from Microsoft Exchange Server using a functional
+account that shares calendars with other users.
+
+The benefit of this solution is the calendars remain inside Microsoft Exchange.
+If a backup is taken they are part of it, no additional service is needed, and
+access permissions are handled by Microsoft Exchange.
+
 ### A scriptable tool to create events ###
 
 Part of the package is a script `addEventToIcal.py` that helps migration from
