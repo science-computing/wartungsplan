@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import configparser
-from exchangelib import Configuration, Credentials, Account, EWSDateTime, DELEGATE, IMPERSONATION, EWSTimeZone
+import datetime
+from exchangelib import Configuration, Credentials, Account, DELEGATE, EWSTimeZone
 from icalendar import Calendar, Event
 
 # TODO:
@@ -25,21 +26,29 @@ account = Account(
     access_type=DELEGATE,
 )
 
-calendar_items = account.calendar.all()
+start = datetime.datetime.today().astimezone()
+end = start + datetime.timedelta(days=7)
+
+# exchangelib.Account.calendar.all() can not be used because it doesn't expand
+# recurring events. exchangelib.CalendarItem['recurrence'] and
+# icalendar.Event['rrule'] are not in any way compatible or translate
+# meaningfully.
+calendar_items = account.calendar.view(start=start, end=end)
 
 # Create a new iCalendar object
 ical = Calendar()
 
 # Iterate through each calendar item and add it to the iCalendar object
+# ATTENTION!! Only summary, start, end, and description are copied
 for item in calendar_items:
     event = Event()
     event.add('summary', item.subject)
     event.add('dtstart', item.start)
     event.add('dtend', item.end)
     event.add('description', item.body)
-    
+
     # Add more properties as needed, such as location, attendees, etc.
-    
+
     ical.add_component(event)
 
 # Save the iCalendar object to a file
