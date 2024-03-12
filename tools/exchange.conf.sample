@@ -1,3 +1,4 @@
 [exchange]
 user = functional_account@example.com
 password = secure_functional_password
+host = localhost

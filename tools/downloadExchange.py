@@ -11,8 +11,15 @@ config.read("exchange.conf")
 credentials = Credentials(config['exchange']['user'],
                           config['exchange']['password'])
 
+config = Configuration(server=config['exchange']['host'], credentials=credentials)
+
 # Connect to the Exchange server
-account = Account(config['exchange']['user'], credentials=credentials, autodiscover=True)
+account = Account(
+    primary_smtp_address=config['exchange']['user'],
+    config=config,
+    autodiscover=False,
+    access_type=DELEGATE,
+)
 
 # Define the start and end datetime for which you want to fetch events
 start_date = EWSDateTime(2024, 1, 1)
