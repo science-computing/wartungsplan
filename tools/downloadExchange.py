@@ -1,47 +1,104 @@
 #!/usr/bin/env python
+# encoding: utf-8
 
+# A tool to download a calendar from Microsoft Exchange
+
+import argparse
 import configparser
 import datetime
-from exchangelib import Configuration, Credentials, Account, DELEGATE, EWSTimeZone
-from icalendar import Calendar, Event
+import logging
+import dateutil.parser
+import exchangelib
+import icalendar
 
-# TODO:
-# commandline options: config
-# config options: out-file
+logger = logging.getLogger(__name__)
 
-# Set up credentials (replace with your own credentials)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--config', default='./exchange.conf',
+                    help='Absolute or relative path to configuration file.')
+parser.add_argument('-v', '--verbose', action='count', default=0,
+                    help='More v\'s more text')
+parser.add_argument('-s', '--start-date', default=None,
+                    help='Start Date e.g. 2023-05-02. Default is todays date')
+parser.add_argument('-e', '--end-date', default=None,
+                    help='End Date e.g. 2023-05-03. ' +
+                         'Default is start-date + 7 days. ' +
+                         '(00:00:00 respectively)')
+parser.add_argument('-t', '--test', action='store_true',
+                    help='No Exchange server? Run script on dummy data!')
+args = parser.parse_args()
+
+logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.ERROR)
+
+if args.verbose == 1:
+    logger.setLevel(logging.INFO)
+    logger.info("Loglevel INFO")
+if args.verbose >= 2:
+    logger.setLevel(logging.DEBUG)
+    logger.info("Loglevel DEBUG")
+logger.debug("Parsed args: %s", args)
+
+# log system settings
+logger.info("Datetime utc now: %s", datetime.datetime.utcnow())
+logger.info("Datetime local time now: %s", datetime.datetime.now().astimezone())
+
+
+# Read Config file with utf-8 encoding (Umlaute ä, ö, ü, ... can be read)
 config = configparser.ConfigParser()
-config.read("exchange.conf")
+with open(args.config, mode='r', encoding='utf-8') as conf:
+    config.read_file(conf)
+    config = config['exchange']
+    logger.debug("Read config %s", args.config)
 
-credentials = Credentials(config['exchange']['user'],
-                          config['exchange']['password'])
 
-xconfig = Configuration(server=config['exchange']['host'], credentials=credentials)
+# prepare credentials for login
+credentials = exchangelib.Credentials(config['user'],
+                                      config['password'])
 
-# Connect to the Exchange server
-account = Account(
-    primary_smtp_address=config['exchange']['email'],
-    config=xconfig,
-    autodiscover=False,
-    access_type=DELEGATE,
-)
+xconfig = exchangelib.Configuration(server=config.get('host', 'localhost'),
+                                    credentials=credentials)
 
-start = datetime.datetime.today().astimezone()
-end = start + datetime.timedelta(days=7)
+if not args.test:
+    # Connect to the Exchange server
+    account = exchangelib.Account(
+        primary_smtp_address=config['email'],
+        config=xconfig,
+        autodiscover=False,
+        access_type=exchangelib.DELEGATE,
+    )
+
+if args.start_date:
+    start = dateutil.parser.parse(args.start_date)
+else:
+    start = datetime.datetime.today().astimezone()
+if args.end_date:
+    end = start + datetime.timedelta(days=7)
+else:
+    end = start + datetime.timedelta(days=7)
 
 # exchangelib.Account.calendar.all() can not be used because it doesn't expand
 # recurring events. exchangelib.CalendarItem['recurrence'] and
 # icalendar.Event['rrule'] are not in any way compatible or translate
 # meaningfully.
-calendar_items = account.calendar.view(start=start, end=end)
+if not args.test:
+    calendar_items = account.calendar.view(start=start, end=end)
+else:
+    calendar_items = [exchangelib.CalendarItem(subject="foo1", start=start, end=end),
+                      exchangelib.CalendarItem(subject="foo2", start=start, end=end),
+                      exchangelib.CalendarItem(subject="bar1", start=start, end=end)]
+logger.info("Number of items in calendar: %i", len(calendar_items))
 
 # Create a new iCalendar object
-ical = Calendar()
+ical = icalendar.Calendar()
 
 # Iterate through each calendar item and add it to the iCalendar object
 # ATTENTION!! Only summary, start, end, and description are copied
 for item in calendar_items:
-    event = Event()
+    logger.debug("Read item: %s, %s, %s", item.subject, item.start, item.end)
+    event = icalendar.Event()
     event.add('summary', item.subject)
     event.add('dtstart', item.start)
     event.add('dtend', item.end)
@@ -52,8 +109,8 @@ for item in calendar_items:
     ical.add_component(event)
 
 # Save the iCalendar object to a file
-with open('calendar_events.ics', 'wb') as f:
+with open(config.get('outfile', 'calendar_events.ics'), 'wb') as f:
     f.write(ical.to_ical())
 
-print("Calendar events have been exported to 'calendar_events.ics'")
-
+logger.info("Calendar events have been exported to %s",
+            config.get('outfile', 'calendar_events.ics'))
