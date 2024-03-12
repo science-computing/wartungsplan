@@ -3,7 +3,10 @@
 import configparser
 from exchangelib import Configuration, Credentials, Account, EWSDateTime, DELEGATE, IMPERSONATION, EWSTimeZone
 from icalendar import Calendar, Event
-import datetime
+
+# TODO:
+# commandline options: config
+# config options: out-file
 
 # Set up credentials (replace with your own credentials)
 config = configparser.ConfigParser()
@@ -22,16 +25,7 @@ account = Account(
     access_type=DELEGATE,
 )
 
-# Define the start and end datetime for which you want to fetch events
-start_date = datetime.datetime.strptime('2024-01-01', '%Y-%m-%d')
-end_date = datetime.datetime.strptime('2024-01-31', '%Y-%m-%d')
-
-tz = EWSTimeZone.localzone()
-tz_start = EWSDateTime.from_datetime(start_date).astimezone(tz)
-tz_end =   EWSDateTime.from_datetime(end_date).astimezone(tz)
-
-# Fetch calendar items between start_date and end_date
-calendar_items = account.calendar.view(start=tz_start, end=tz_end)
+calendar_items = account.calendar.all()
 
 # Create a new iCalendar object
 ical = Calendar()
