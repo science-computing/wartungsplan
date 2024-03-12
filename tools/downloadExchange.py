@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import configparser
-from exchangelib import Credentials, Account, EWSDateTime
+from exchangelib import Configuration, Credentials, Account, EWSDateTime, DELEGATE, IMPERSONATION
 from icalendar import Calendar, Event
 
 # Set up credentials (replace with your own credentials)
@@ -11,12 +11,12 @@ config.read("exchange.conf")
 credentials = Credentials(config['exchange']['user'],
                           config['exchange']['password'])
 
-config = Configuration(server=config['exchange']['host'], credentials=credentials)
+xconfig = Configuration(server=config['exchange']['host'], credentials=credentials)
 
 # Connect to the Exchange server
 account = Account(
-    primary_smtp_address=config['exchange']['user'],
-    config=config,
+    primary_smtp_address=config['exchange']['email'],
+    config=xconfig,
     autodiscover=False,
     access_type=DELEGATE,
 )

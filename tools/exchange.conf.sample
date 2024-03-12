@@ -1,4 +1,5 @@
 [exchange]
-user = functional_account@example.com
+user = MYWINDOMAIN\functional_account
+email = functional_account@example.com
 password = secure_functional_password
 host = localhost
