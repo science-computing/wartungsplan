@@ -95,9 +95,12 @@ if args.start_date:
 else:
     start = datetime.datetime.today().astimezone()
 if args.end_date:
-    end = start + datetime.timedelta(days=7)
+    end = dateutil.parser.parse(args.end_date)
 else:
     end = start + datetime.timedelta(days=7)
+
+logger.debug("Start date is: %s", start)
+logger.debug("End date is: %s", end)
 
 # exchangelib.Account.calendar.all() can not be used because it doesn't expand
 # recurring events. exchangelib.CalendarItem['recurrence'] and
