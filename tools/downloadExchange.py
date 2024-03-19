@@ -11,6 +11,7 @@ import dateutil.parser
 import exchangelib
 import icalendar
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +71,25 @@ if not args.test:
         access_type=exchangelib.DELEGATE,
     )
 
+    # walk calendars
+    logger.info("First walk")
+    try:
+        logger.info("Found the following calendars:")
+        for item in account.folders[exchangelib.folders.Calendar]:
+            logger.info(item.name)
+    except Exception as e:
+        logger.error(e, exc_info=e)
+
+    logger.info("Second walk")
+    try:
+        for cal_folder in account.calendar.children:
+            logger.info(cal_folder.name)
+            if -1 !=str(cal_folder).find(config.get(calendar, 'Calendar'):
+                logger.info("Found configured calendar")
+                myCalendar=cal_folder
+    except Exception as e:
+        logger.error(e, exc_info=e)
+
 if args.start_date:
     start = dateutil.parser.parse(args.start_date)
 else:
@@ -103,7 +123,6 @@ for item in calendar_items:
     event.add('dtstart', item.start)
     event.add('dtend', item.end)
     event.add('description', item.body)
-
     # Add more properties as needed, such as location, attendees, etc.
 
     ical.add_component(event)
