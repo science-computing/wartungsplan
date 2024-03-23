@@ -84,7 +84,7 @@ if not args.test:
     try:
         for cal_folder in account.calendar.children:
             logger.info(cal_folder.name)
-            if -1 !=str(cal_folder).find(config.get(calendar, 'Calendar'):
+            if -1 != str(cal_folder).find(config.get(calendar, 'Calendar')):
                 logger.info("Found configured calendar")
                 myCalendar=cal_folder
     except Exception as e:
