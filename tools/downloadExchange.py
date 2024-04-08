@@ -84,11 +84,21 @@ if not args.test:
 if args.start_date:
     start = dateutil.parser.parse(args.start_date)
 else:
-    start = datetime.datetime.today().astimezone()
+    start = datetime.datetime.today()
 if args.end_date:
     end = dateutil.parser.parse(args.end_date)
 else:
     end = start + datetime.timedelta(days=7)
+
+# tzinfo object must be compatible with exchangelib
+# https://github.com/ecederstrand/exchangelib/issues/1076
+if args.test:
+    tz = exchangelib.EWSTimeZone.localzone()
+else:
+    tz = account.default_timezone
+
+start = exchangelib.EWSDateTime.from_datetime(start).astimezone(tz)
+end = exchangelib.EWSDateTime.from_datetime(end).astimezone(tz)
 
 logger.debug("Start date is: %s", start)
 logger.debug("End date is: %s", end)
@@ -103,7 +113,7 @@ else:
     calendar_items = [exchangelib.CalendarItem(subject="foo1", start=start, end=end),
                       exchangelib.CalendarItem(subject="foo2", start=start, end=end),
                       exchangelib.CalendarItem(subject="bar1", start=start, end=end)]
-logger.info("Number of items in calendar: %i", len(calendar_items))
+logger.info("Number of items in calendar: %i", len(calendar_items[0:]))
 
 # Create a new iCalendar object
 ical = icalendar.Calendar()
