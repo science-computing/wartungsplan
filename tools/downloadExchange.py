@@ -74,6 +74,23 @@ if not args.test:
     # walk calendars
     logger.info("First walk")
     try:
+        print(account.root.tree())
+
+        account.root.refresh()
+        account.public_folders_root.refresh()
+        account.archive_root.refresh()
+        
+        some_folder = a.root / "Some Folder"
+        print(some_folder.parent)
+        print(some_folder.parent.parent.parent)
+        # Returns the root of the folder structure, at any level. Same as Account.root
+        print(some_folder.root)
+        print(some_folder.children)  # A generator of child folders
+        print(some_folder.absolute)  # Returns the absolute path, as a string
+        # A generator returning all subfolders at arbitrary depth this level
+        some_folder.walk()
+
+
         logger.info("Found the following calendars:")
         for item in account.folders[exchangelib.folders.Calendar]:
             logger.info(item.name)
@@ -82,9 +99,19 @@ if not args.test:
 
     logger.info("Second walk")
     try:
+
+        for cal_folder in account.calendar.children:
+            if -1 !=str(cal_folder).find('Test'):
+                myCalendar=cal_folder
+                break
+        
+        for item in myCalendar.all():
+            print(item.subject)
+
+
         for cal_folder in account.calendar.children:
             logger.info(cal_folder.name)
-            if -1 != str(cal_folder).find(config.get(calendar, 'Calendar')):
+            if -1 != str(cal_folder).find(config.get('calendar', 'Calendar')):
                 logger.info("Found configured calendar")
                 myCalendar=cal_folder
     except Exception as e:
