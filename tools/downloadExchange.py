@@ -113,7 +113,6 @@ else:
     calendar_items = [exchangelib.CalendarItem(subject="foo1", start=start, end=end),
                       exchangelib.CalendarItem(subject="foo2", start=start, end=end),
                       exchangelib.CalendarItem(subject="bar1", start=start, end=end)]
-logger.info("Number of items in calendar: %i", len(calendar_items[0:]))
 
 # Create a new iCalendar object
 ical = icalendar.Calendar()
