@@ -119,6 +119,20 @@ The benefit of this solution is the calendars remain inside Microsoft Exchange.
 If a backup is taken they are part of it, no additional service is needed, and
 access permissions are handled by Microsoft Exchange.
 
+    $ tools/downloadExchange.py -h
+    usage: downloadExchange.py [-h] [-c CONFIG] [-v] [-s START_DATE] [-e END_DATE] [-t]
+    
+    options:
+      -h, --help            show this help message and exit
+      -c CONFIG, --config CONFIG
+                            Absolute or relative path to configuration file.
+      -v, --verbose         More v's more text
+      -s START_DATE, --start-date START_DATE
+                            Start Date e.g. 2023-05-02. Default is todays date
+      -e END_DATE, --end-date END_DATE
+                            End Date e.g. 2023-05-03. Default is start-date + 7 days. (00:00:00 respectively)
+      -t, --test            No Exchange server? Run script on dummy data!
+
 ### A scriptable tool to create events ###
 
 Part of the package is a script `addEventToIcal.py` that helps migration from

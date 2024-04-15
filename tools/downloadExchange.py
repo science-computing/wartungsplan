@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# A tool to download a calendar from Microsoft Exchange
+"""
+A tool to download a calendar from Microsoft Exchange
+"""
 
 import argparse
 import configparser
