@@ -133,6 +133,16 @@ access permissions are handled by Microsoft Exchange.
                             End Date e.g. 2023-05-03. Default is start-date + 7 days. (00:00:00 respectively)
       -t, --test            No Exchange server? Run script on dummy data!
 
+The configuration file can/should contain the following options:
+
+    [exchange]
+    user = MYWINDOMAIN\functional_account
+    email = functional_account@example.com
+    password = secure_functional_password
+    #calendar = Calendar
+    #host = localhost
+    #outfile = calendar_events.ics
+
 ### A scriptable tool to create events ###
 
 Part of the package is a script `addEventToIcal.py` that helps migration from
