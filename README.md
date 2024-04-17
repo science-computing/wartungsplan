@@ -109,6 +109,40 @@ It is strongly recommended to explicitly sync the calendar back to its source:
 
     Send / Receive -> Send all
 
+### A tool to download calendars from Microsoft Exchange
+
+`tools/downloadExchange.py` and its configuration file `exchange.conf` can be
+used to download a calendar from Microsoft Exchange Server using a functional
+account that shares calendars with other users.
+
+The benefit of this solution is the calendars remain inside Microsoft Exchange.
+If a backup is taken they are part of it, no additional service is needed, and
+access permissions are handled by Microsoft Exchange.
+
+    $ tools/downloadExchange.py -h
+    usage: downloadExchange.py [-h] [-c CONFIG] [-v] [-s START_DATE] [-e END_DATE] [-t]
+    
+    options:
+      -h, --help            show this help message and exit
+      -c CONFIG, --config CONFIG
+                            Absolute or relative path to configuration file.
+      -v, --verbose         More v's more text
+      -s START_DATE, --start-date START_DATE
+                            Start Date e.g. 2023-05-02. Default is todays date
+      -e END_DATE, --end-date END_DATE
+                            End Date e.g. 2023-05-03. Default is start-date + 7 days. (00:00:00 respectively)
+      -t, --test            No Exchange server? Run script on dummy data!
+
+The configuration file can/should contain the following options:
+
+    [exchange]
+    user = MYWINDOMAIN\functional_account
+    email = functional_account@example.com
+    password = secure_functional_password
+    #calendar = Calendar
+    #host = localhost
+    #outfile = calendar_events.ics
+
 ### A scriptable tool to create events ###
 
 Part of the package is a script `addEventToIcal.py` that helps migration from

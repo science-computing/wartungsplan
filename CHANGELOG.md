@@ -2,7 +2,7 @@
 
 ## Under development
 
- -
+ - Tools: downloadExchange
 
 ## Version 0.4
 

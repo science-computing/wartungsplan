@@ -1,0 +1,7 @@
+[exchange]
+user = MYWINDOMAIN\functional_account
+email = functional_account@example.com
+password = secure_functional_password
+#calendar = Calendar
+#host = localhost
+#outfile = calendar_events.ics
