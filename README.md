@@ -132,6 +132,8 @@ access permissions are handled by Microsoft Exchange.
       -e END_DATE, --end-date END_DATE
                             End Date e.g. 2023-05-03. Default is start-date + 7 days. (00:00:00 respectively)
       -t, --test            No Exchange server? Run script on dummy data!
+    
+    $ tools/downloadExchange.py -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
 
 The configuration file can/should contain the following options:
 
