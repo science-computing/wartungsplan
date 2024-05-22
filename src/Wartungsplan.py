@@ -296,7 +296,7 @@ class Wartungsplan:
 
         # parse end-date
         if not end_date:
-            self.end_date = self.start_date + datetime.timedelta(1)
+            self.end_date = self.start_date + datetime.timedelta(7)
         else:
             self.end_date = dateutil.parser.parse(end_date)
         logger.info("End Date: %s", self.end_date.astimezone())
@@ -338,7 +338,7 @@ def main():
                         help='Start Date e.g. 2023-05-02. Default is todays date')
     parser.add_argument("--end-date", '-e', default=None,
                         help='End Date e.g. 2023-05-03. ' +
-                             'Default is start-date + 1 day. ' +
+                             'Default is start-date + 1 week. ' +
                              '(00:00:00 respectively)')
 
     # list: List installed jobs

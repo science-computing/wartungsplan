@@ -3,6 +3,7 @@
 ## Under development
 
  - Tools: downloadExchange
+ - End-Date: Changed default range from +1 day to plus one week
 
 ## Version 0.4
 
