@@ -134,6 +134,9 @@ access permissions are handled by Microsoft Exchange.
       -t, --test            No Exchange server? Run script on dummy data!
     
     $ tools/downloadExchange.py -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
+    
+    # depending on the network environment you might need to change or unset
+    $ http_proxy= https_proxy= tools/downloadExchange.py -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
 
 The configuration file can/should contain the following options:
 

@@ -117,9 +117,9 @@ class TestWartungsplan(unittest.TestCase):
         p = os.path.join(self.tests_data_dir, "EveryDayExcept-2023-09-26.ics")
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
-            wp = Wartungsplan.Wartungsplan("2023-09-26", None, cal, self.b)
+            wp = Wartungsplan.Wartungsplan("2023-09-26", "2023-09-27", cal, self.b)
             self.assertEqual(wp.run_backend(), 0)
-            wp = Wartungsplan.Wartungsplan("2023-09-30", None, cal, self.b)
+            wp = Wartungsplan.Wartungsplan("2023-09-30", "2023-10-01", cal, self.b)
             self.assertEqual(wp.run_backend(), 1)
 
     def test_with_outlook_calendar(self):
@@ -127,10 +127,10 @@ class TestWartungsplan(unittest.TestCase):
         p = os.path.join(self.tests_data_dir, "OutlookCalendar-2023-10-06.ics")
         with open(p, encoding='utf-8') as c:
             cal = icalendar.Calendar.from_ical(c.read())
-            wp = Wartungsplan.Wartungsplan("2023-10-06", None, cal, self.b)
+            wp = Wartungsplan.Wartungsplan("2023-10-06", "2023-10-07", cal, self.b)
             self.assertTrue('ö' in wp.events[0]["summary"])
             self.assertEqual(wp.run_backend(), 1)
-            wp = Wartungsplan.Wartungsplan("2023-10-07", None, cal, self.b)
+            wp = Wartungsplan.Wartungsplan("2023-10-07", "2023-10-08", cal, self.b)
             self.assertEqual(wp.run_backend(), 3)
 
 
