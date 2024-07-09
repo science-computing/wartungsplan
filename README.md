@@ -46,6 +46,8 @@ if commands fail the entire unit fails.
 
 ### Event headers ###
 
+:exclamation:  Save calendar events always as plain text (HTML is evil)
+
 The calendar events may have in the configuration file defined headers that
 substitute the predefined values.
 
