@@ -247,7 +247,8 @@ class OtrsApi(Backend):
                                      Queue=options["queue"],
                                      State=options["state"],
                                      Priority=options["priority"],
-                                     CustomerUser=options["customUser"])
+                                     CustomerUser=options["customUser"],
+                                     Type="Unclassified")
         first_article = pyotrs.Article({'Subject': options['title'],
                                         "Body":
                                           text +
@@ -269,7 +270,8 @@ class OtrsApi(Backend):
                                        self.config['otrs']['password'])
 
                 logger.info("Opening connection to OTRS")
-                if not client.session_create():
+
+                if not client.session_restore_or_create():
                     logger.error("Session to OTRS could not be opened")
                     return False
 

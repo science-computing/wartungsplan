@@ -199,7 +199,7 @@ class TestOtrsApi(unittest.TestCase):
         ticket = ticket.to_dct()
         article = article.to_dct()
         t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q1:q2', 'State': 'New',
-                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+                         'Priority': 'high', 'CustomerUser': 'Tom',  'Type': 'Unclassified'}}
         a1 = {'Subject': 'One ', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
@@ -213,7 +213,7 @@ class TestOtrsApi(unittest.TestCase):
         ticket = ticket.to_dct()
         article = article.to_dct()
         t1 = {'Ticket': {'Title': 'One ', 'Queue': 'q', 'State': 'New',
-                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+                         'Priority': 'high', 'CustomerUser': 'Tom',  'Type': 'Unclassified'}}
         a1 = {'Subject': 'One ', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
@@ -227,7 +227,7 @@ class TestOtrsApi(unittest.TestCase):
         ticket = ticket.to_dct()
         article = article.to_dct()
         t1 = {'Ticket': {'Title': 'One ', 'Queue': 'ä5:ä6', 'State': 'New',
-                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+                         'Priority': 'high', 'CustomerUser': 'Tom',  'Type': 'Unclassified'}}
         a1 = {'Subject': 'One ', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
@@ -242,7 +242,7 @@ not: allowed"""
         ticket = ticket.to_dct()
         article = article.to_dct()
         t1 = {'Ticket': {'Title': 'asdf', 'Queue': 'q5:q6', 'State': 'New',
-                         'Priority': 'high', 'CustomerUser': 'Tom'}}
+                         'Priority': 'high', 'CustomerUser': 'Tom',  'Type': 'Unclassified'}}
         a1 = {'Subject': 'asdf', 'Body': '\n\n'}
         self.assertEqual(ticket, t1)
         self.assertEqual(article, a1)
