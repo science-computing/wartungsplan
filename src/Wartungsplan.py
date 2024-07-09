@@ -5,10 +5,10 @@
 #                                                                             #
 # Wartungspläne CLI Tool                                                      #
 #                                                                             #
-# plan.py                                                                     #
+# Wartungsplan.py                                                             #
 ###############################################################################
 #                                                                             #
-# Copyright (C) 2016-2022 science + computing ag                              #
+# Copyright (C) 2016-2024 science + computing ag                              #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -25,7 +25,7 @@
 #                                                                             #
 ###############################################################################
 
-""" A tool run to open recurring tickets """
+""" A tool to open recurring calendar events and create tickets in a backend """
 
 
 import argparse
@@ -317,7 +317,6 @@ class Wartungsplan:
 
         if len(self.events) <= 0:
             logger.info("No events in the given period")
-            return
 
     def run_backend(self):
         """ Run the routine to perform the backend action """
@@ -405,6 +404,7 @@ def main():
         logger.debug("Read calendar file %s", calendarfile)
 
     # call the function selected by action
+    backend = None
     if args.action == 'list':
         backend = ListStdout(None, args.dry_run)
     if args.action == 'send':
