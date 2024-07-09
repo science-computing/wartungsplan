@@ -35,6 +35,7 @@ import logging
 import configparser
 import smtplib
 import re
+import warnings
 import importlib.metadata
 from email.message import EmailMessage
 
@@ -122,6 +123,10 @@ class Backend:
         # log headers
         for key in headers:
             logger.debug("Header: %s: %s", key, headers[key])
+
+        # log warning if HTML in event body
+        if any(html_tag in data for html_tag in ["<html>", "<HTML>", "<div>", "<p>"]):
+            warnings.warn("HTML in event body found. Calendar events always have to be plain text")
 
         return headers["headers"], '\n'.join(text)
 

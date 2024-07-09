@@ -32,6 +32,7 @@ import os
 import sys
 import unittest
 import tempfile
+import warnings
 import icalendar
 
 # Add Wartungsplan to PYTHONPATH
@@ -181,6 +182,21 @@ class TestOtrsApi(unittest.TestCase):
         header,text = b._split_message(body)
         self.assertEqual(header["Queue"], "Ops5")
         self.assertEqual(len(text.split('\n')), 3)
+
+    def test_html_in_message(self):
+        """ Test if html in message """
+        body = """<html><div>Queue: Ops5
+        Priority: high
+
+        Kind creature,"""
+        b = Wartungsplan.OtrsApi("", False)
+
+        with warnings.catch_warnings(record=True) as wrn:
+            b._split_message(body)
+
+        self.assertEqual(len(wrn), 1)
+        self.assertTrue("HTML in event body" in str(wrn[-1].message))
+
 
     def test_config_option_priority(self):
         """ Test how config options get replaces by headers """
