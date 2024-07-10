@@ -2,6 +2,9 @@
 
 ## Under development
 
+
+## Version 1.0rc1
+
  - Tools: downloadExchange
  - End-Date: Changed default range from +1 day to plus one week
  - downloadExchange: is now an installed binary
