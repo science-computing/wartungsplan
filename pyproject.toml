@@ -7,7 +7,7 @@ name = "Wartungsplan"
 version = "0.4"
 description = "Manage recurring tasks in ical"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 license = {text = "GPLv3"}
 authors = [
     {name = "Felix Bauer", email = "felix.bauer@atos.net"},
@@ -18,15 +18,18 @@ maintainers = [
 ]
 
 dependencies = [
-	"icalendar==5.0.10",
-	"python_dateutil==2.8.2",
-	"recurring_ical_events==2.1.0",
-	"Requests==2.32.0",
-	"importlib-metadata==6.8.0",
+        "icalendar==5.0.13",
+        "python-dateutil==2.9.0",
+        "recurring-ical-events==2.2.3",
+        "requests==2.32.3",
+        "importlib_metadata==8.0.0",
 ]
 
 [project.optional-dependencies]
-otrs = ["pyotrs==1.4.0"]
+otrs = [
+	"pyotrs==1.4.0",
+	"exchangelib==5.4.1"
+]
 
 [project.urls]
 repository = "https://github.com/science-computing/wartungsplan"
