@@ -113,7 +113,7 @@ It is strongly recommended to explicitly sync the calendar back to its source:
 
 ### A tool to download calendars from Microsoft Exchange
 
-`tools/downloadExchange.py` and its configuration file `exchange.conf` can be
+`downloadExchange` and its configuration file `exchange.conf` can be
 used to download a calendar from Microsoft Exchange Server using a functional
 account that shares calendars with other users.
 
@@ -121,8 +121,8 @@ The benefit of this solution is the calendars remain inside Microsoft Exchange.
 If a backup is taken they are part of it, no additional service is needed, and
 access permissions are handled by Microsoft Exchange.
 
-    $ tools/downloadExchange.py -h
-    usage: downloadExchange.py [-h] [-c CONFIG] [-v] [-s START_DATE] [-e END_DATE] [-t]
+    $ downloadExchange -h
+    usage: downloadExchange [-h] [-c CONFIG] [-v] [-s START_DATE] [-e END_DATE] [-t]
     
     options:
       -h, --help            show this help message and exit
@@ -135,10 +135,10 @@ access permissions are handled by Microsoft Exchange.
                             End Date e.g. 2023-05-03. Default is start-date + 7 days. (00:00:00 respectively)
       -t, --test            No Exchange server? Run script on dummy data!
     
-    $ tools/downloadExchange.py -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
+    $ downloadExchange -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
     
     # depending on the network environment you might need to change or unset
-    $ http_proxy= https_proxy= tools/downloadExchange.py -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
+    $ http_proxy= https_proxy= downloadExchange -s $(date +%Y-%m-%d --date="today") -e $(date +%Y-%m-%d --date="+2week")
 
 The configuration file can/should contain the following options:
 
