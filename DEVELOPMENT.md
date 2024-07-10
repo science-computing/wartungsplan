@@ -6,12 +6,15 @@
 source venv/bin/activate
 # install optional dependencies
 pip install pyotrs
+test/test.py
 ```
 
 ## Pypi release
 
-Set the correct version in `pyproject.toml`, set a git tag on the commit, and
-commit to `main`.
+ * Update CHANGELOG.md
+ * Set the correct version in `pyproject.toml`
+ * Set a git tag on the commit
+ * Commit to `main`.
 
 Then create and upload the package to Pypi:
 
@@ -28,7 +31,7 @@ twine upload dist/*
 ```
 
 Note: Dev requirements are maintained in `dev-requirements.txt` while runtime
-dependencies are hold in inside `pyproject.toml`.
+dependencies are hold inside `pyproject.toml`.
 
 
 ## Container
