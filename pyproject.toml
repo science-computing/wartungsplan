@@ -34,3 +34,4 @@ repository = "https://github.com/science-computing/wartungsplan"
 [project.scripts]
 Wartungsplan = "Wartungsplan:main"
 addEventToIcal = "addEventToIcal:main"
+downloadExchange = "downloadExchange:main"
