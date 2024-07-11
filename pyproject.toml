@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Wartungsplan"
-version = "1.0rc1"
+version = "1.0rc2"
 description = "Manage recurring tasks in ical"
 readme = "README.md"
 requires-python = ">=3.8"
