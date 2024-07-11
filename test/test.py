@@ -41,6 +41,7 @@ sys.path.append(os.path.dirname(TESTSDIR))
 
 from src import Wartungsplan
 from src import addEventToIcal
+from src import downloadExchange
 
 
 # pylint: disable=invalid-name
@@ -330,6 +331,16 @@ class TestAddEventToIcal(unittest.TestCase):
         ]
         for text, parsed  in rrules:
             self.assertEqual(parsed, addEventToIcal.string_to_rrule(text))
+
+
+class TestDownloadExchange(unittest.TestCase):
+    """ Test tool to download a date range from exchange calendar """
+
+    def test_run(self):
+        """ Test downloadExchange test capability """
+        downloadExchange.download({'user':'', 'password': ''}, '2024-01-01', '', dry_run=True)
+        downloadExchange.download({'user':'', 'password': ''}, '2225-01-01', '', dry_run=True)
+        downloadExchange.download({'user':'', 'password': ''}, '', '', dry_run=True)
 
 
 if __name__ == '__main__':

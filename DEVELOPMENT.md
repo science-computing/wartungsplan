@@ -6,6 +6,7 @@
 source venv/bin/activate
 # install optional dependencies
 pip install pyotrs
+pip install exchangelib
 test/test.py
 ```
 
