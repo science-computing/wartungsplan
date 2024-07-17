@@ -59,15 +59,21 @@ def download(config, start_date=None, end_date=None, dry_run=False):
             access_type=exchangelib.DELEGATE,
         )
 
-        selected_calendar = account.calendar
+        selected_calendar = None
         if config.get('calendar', None):
             # walk calendars
-            logger.info("Walk calendars")
+            logger.debug("Walk calendars")
             for cal_folder in account.calendar.children:
-                logger.info("Found calendar: %s", cal_folder)
-                if -1 !=str(cal_folder).find(config.get('calendar', 'Calendar')):
+                logger.debug("Found calendar: %s", cal_folder)
+                if str(cal_folder) == config.get('calendar', 'Calendar'):
+                    logger.info("Found calendar: %s", cal_folder)
                     selected_calendar = cal_folder
-                    break
+            if not selected_calendar:
+                raise FileNotFoundError(f"Calendar NOT FOUND: \"{cal_folder}\"")
+        else:
+            # use default calendar
+            selected_calendar = account.calendar
+
 
     if start_date:
         start = dateutil.parser.parse(start_date)
