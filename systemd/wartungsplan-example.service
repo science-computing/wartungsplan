@@ -4,11 +4,18 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+#User=wartungsplan
+#Group=wartungsplan
+
 Type=oneshot
 WorkingDirectory=/path/to/install/dir
 #ExecStart=/usr/bin/curl -o wp.ical https://
-ExecStart=/path/to/install/dir/venv/bin/Wartungsplan -c plan.conf otrs -v
+#ExecStart=/path/to/install/dir/venv/bin/downloadExchange -c /abs/path/exchange.conf
+ExecStart=/path/to/install/dir/venv/bin/Wartungsplan -c /abs/path/plan.conf otrs -v
 #ExecStartPost=/usr/bin/rm wp.ical
+
+#Environment="http_proxy="
+#Environment="https_proxy="
 
 #ProtectHome=true
 ProtectSystem=full
@@ -21,8 +28,8 @@ ProtectControlGroups=true
 ProtectProc=noaccess
 MemoryDenyWriteExecute=true
 NoNewPrivileges=true
-CapabilityBoundingSet=
-PrivateUsers=true
+#CapabilityBoundingSet=
+#PrivateUsers=true
 
 [Install]
 WantedBy=multi-user.target
