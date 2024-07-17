@@ -231,7 +231,9 @@ class OtrsApi(Backend):
     def _prepare_event(self, headers, text, event):
         options = {
         "title" : str(event['summary']),
-        'queue' : self.config['otrs'].get('queue', 'Queueebene1::Queueebene2'),
+        # "In a fresh OTRS installation there are 4 default queues: Raw, Junk, Misc and Postmaster"
+        # https://doc-archive.otrs.com/doc/manual/admin/7.0/en/content/ticket-settings/queues.html
+        'queue' : self.config['otrs'].get('queue', 'Misc'),
         'state' : self.config['otrs'].get('state', 'New'),
         'priority' : self.config['otrs'].get('priority', '1 very low'),
         'customUser' : self.config['otrs'].get('customUser', 'root@localhost')}

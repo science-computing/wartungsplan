@@ -34,6 +34,7 @@ password = AiX3sheeIyahf8aaQuah2wio
 #
 # For OTRS
 #tickettitel = Titel
+queue = Misc
 #queue = Queueebene1::Queueebene2
 #state = New
 #priority = 1 very low
