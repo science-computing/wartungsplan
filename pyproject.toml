@@ -26,10 +26,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-otrs = [
-	"pyotrs==1.4.0",
-	"exchangelib==5.4.1"
-]
+otrs = [ "pyotrs==1.4.0" ]
+exchange = [ "exchangelib==5.4.2" ]
 
 [project.urls]
 repository = "https://github.com/science-computing/wartungsplan"

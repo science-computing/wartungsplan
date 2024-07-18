@@ -221,7 +221,7 @@ For documentation on how to set up the OTRS side please refer to pyotrs
 documentation: <https://pypi.org/project/PyOTRS/>
 
 Install optional depenency:
-    pip install pyotrs
+    pip install wartungsplan[otrs]
 
 The config file:
 
