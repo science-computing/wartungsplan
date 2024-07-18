@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+rROM python:3.11-slim
 
 RUN pip install Wartungsplan
 

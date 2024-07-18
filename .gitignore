@@ -1,1 +1,8 @@
-venv
+venv*
+*.ics
+plan.conf
+exchange.conf
+
+build
+dist
+debian
