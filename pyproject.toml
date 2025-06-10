@@ -21,7 +21,7 @@ dependencies = [
         "icalendar==5.0.13",
         "python-dateutil==2.9.0",
         "recurring-ical-events==2.2.3",
-        "requests==2.32.3",
+        "requests==2.32.4",
         "importlib_metadata==8.0.0",
 ]
 
