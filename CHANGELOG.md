@@ -2,6 +2,10 @@
 
 ## Under development
 
+ - Update dependencies
+ - Drop support for Python 3.8 (importlib-metadata 8.7.0 doesn't support it)
+ - Drop support for Python 3.9 (icalendar requires Python >=3.10)
+ - TLS certificate config options for the OTRS backend
 
 ## Version 1.0rc3
 

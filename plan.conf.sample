@@ -1,6 +1,8 @@
 [calendar]
 #Path to ics file. Calendar only needs to be readable.
 calendarfile = /media/shareX/Wartungspläne.ics
+#Start-date + timedelta (days:hours:minutes:seconds)
+timedelta = 1:0:0:0
 
 [mail]
 server = smtp.example.com
@@ -13,6 +15,10 @@ recipient = michael_jackson@example.com
 server = http://localhost
 username = restapiuser
 password = AiX3sheeIyahf8aaQuah2wio
+#https_verify = True
+#File path; if specified overrides python/system default for
+#ca_cert_bundle = /etc/wartungsplan/cert.pem
+
 #customUser = root@localhost
 #queue = Queueebene1::Queueebene2
 #state = New

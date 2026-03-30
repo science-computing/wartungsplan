@@ -47,3 +47,11 @@ Run:
 ```
 podman run -it -v ./plan.conf:/etc/plan.conf -v ./test.ical:/data/test.ical wartungsplan:latest list
 ```
+
+
+## TLS server OTRS backend test
+
+```
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes
+openssl s_server -key key.pem -cert cert.pem -accept 4433 -www
+```

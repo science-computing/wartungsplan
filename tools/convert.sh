@@ -3,9 +3,12 @@
 # input dir
 DIR=txt
 # prefix of calendar files
-calendar=wartungsplan-03
-startDate=2023-10-01
+calendar=wartungsplan-04
+startDate=2024-10-01
 duration=00:30
+
+
+ADDEVENTTOICAL=addEventToIcal
 
 declare -A rrule=(
 	["daily"]="FREQ=DAILY"
@@ -52,7 +55,7 @@ function addEvent(){
 
   s=${startTime[${wp[0]}]}
   #echo LOG: cat \"$DIR/$filename\" \| addEventToIcal --start-date $startDate --rrule \"$rr\" --start-time $s --duration $duration --title \"$@\" \"$calendar-$out.ics\"
-  cat "$DIR/$filename" | addEventToIcal --start-date $startDate --rrule "$rr" --start-time $s --duration $duration --title "$t" "$calendar-$out.ics"
+  cat "$DIR/$filename" | $ADDEVENTTOICAL --start-date $startDate --rrule "$rr" --start-time $s --duration $duration --title "$t" "$calendar-$out.ics"
 }
 
 
@@ -62,6 +65,9 @@ if ! [[ "$d" =~ ^[0-9][0-9]+$ ]]; then echo "ERROR: duration mismatch: $d"; exit
 
 # count events
 n_events=0
+
+which $ADDEVENTTOICAL 2> /dev/null || ( echo "ERROR: Program addeventtoical not found (are you not in the venv)"; exit 1 )
+
 
 # walk input dir
 while read w

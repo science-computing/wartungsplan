@@ -29,11 +29,13 @@
 
 import logging
 import os
+import time
 import sys
 import unittest
 import tempfile
 import warnings
 import icalendar
+import datetime
 
 # Add Wartungsplan to PYTHONPATH
 TESTSDIR = os.path.dirname(os.path.abspath(__file__))
@@ -101,6 +103,19 @@ class TestWartungsplan(unittest.TestCase):
             wp = Wartungsplan.Wartungsplan("2023-06-01", "2023-07-01", cal, self.b)
             self.assertEqual(wp.run_backend(), 30)
 
+    def test_timedelta(self):
+        """ timedelta is a config option """
+        p = os.path.join(self.tests_data_dir, "EveryDayWithHeavyHTML.ics")
+        with open(p, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan("2023-05-05", None, cal, self.b, [3,0,0,0])
+            self.assertEqual(wp.run_backend(), 3)
+            wp = Wartungsplan.Wartungsplan("2023-06-01", None, cal, self.b)
+            self.assertEqual(wp.run_backend(), 7)
+            wp = Wartungsplan.Wartungsplan("2023-06-01", None, cal, self.b, [5,0,0,0])
+            self.assertEqual(wp.run_backend(), 5)
+
+
     def test_bangkok_timezone(self):
         """ With this test we avoid regression of an error we made handling
         timezones. While in Bangkok it's the next day we (UTC+2) have a
@@ -122,6 +137,39 @@ class TestWartungsplan(unittest.TestCase):
             wp = Wartungsplan.Wartungsplan("2023-09-26", "2023-09-27", cal, self.b)
             self.assertEqual(wp.run_backend(), 0)
             wp = Wartungsplan.Wartungsplan("2023-09-30", "2023-10-01", cal, self.b)
+            self.assertEqual(wp.run_backend(), 1)
+
+    def test_every_day_no_range_specified(self):
+        """ The calendar file has one event that takes place every day at
+        midnight CET calling Wartungsplan no range is specified to test whether
+        00:00:00 is used correctly (even if run at midnight this should display
+        correctly. """
+        p = os.path.join(self.tests_data_dir, "EveryDayMidnight.ics")
+
+        os.environ['TZ'] = 'UTC'
+        time.tzset()
+        now = datetime.datetime.now().astimezone()
+        tomorrow = now + datetime.timedelta(days=+1)
+        midnight = datetime.time(0,0,0)
+        end = datetime.datetime.combine(tomorrow, midnight)
+        with open(p, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            # start is today at 0:00 end is tomorrow 0:00
+            wp = Wartungsplan.Wartungsplan(None, str(end), cal, self.b)
+            self.assertEqual(wp.run_backend(), 1)
+            # now is (usually) not 00:00 end is in a week at 0:00 (just before
+            # event no. 8)
+            wp = Wartungsplan.Wartungsplan(str(now), None, cal, self.b)
+            self.assertEqual(wp.run_backend(), 7)
+
+        _, calendar_file = tempfile.mkstemp()
+        os.unlink(calendar_file)
+        addEventToIcal.add_event(calendar_file, str(datetime.date.today()), '',
+                                 '', '00:00', '', '0:20',
+                                 'Test1', 'Here we go again')
+        with open(calendar_file, encoding='utf-8') as c:
+            cal = icalendar.Calendar.from_ical(c.read())
+            wp = Wartungsplan.Wartungsplan(None, None, cal, self.b)
             self.assertEqual(wp.run_backend(), 1)
 
     def test_with_outlook_calendar(self):

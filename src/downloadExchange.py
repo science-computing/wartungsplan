@@ -64,8 +64,9 @@ def download(config, start_date=None, end_date=None, dry_run=False):
             # walk calendars
             logger.debug("Walk calendars")
             for cal_folder in account.calendar.children:
+                logger.debug(dir(cal_folder))
                 logger.debug("Found calendar: %s", cal_folder)
-                if str(cal_folder) == config.get('calendar', 'Calendar'):
+                if str(cal_folder) == "Calendar (%s)" % config.get('calendar', 'Calendar'):
                     logger.info("Found calendar: %s", cal_folder)
                     selected_calendar = cal_folder
             if not selected_calendar:

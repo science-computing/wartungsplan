@@ -274,7 +274,9 @@ class OtrsApi(Backend):
             else:
                 client = pyotrs.Client(self.config['otrs']['server'],
                                        self.config['otrs']['username'],
-                                       self.config['otrs']['password'])
+                                       self.config['otrs']['password'],
+                                       https_verify=self.config['otrs'].get('https_verify', True),
+                                       ca_cert_bundle=self.config['otrs'].get('ca_vert_bundle', ""))
 
                 logger.info("Opening connection to OTRS")
 
@@ -292,20 +294,25 @@ class OtrsApi(Backend):
 class Wartungsplan:
     """ Builds the events for the given range and allow to call
         into the backend """
-    def __init__(self, start_date, end_date, calendar, backend):
+    def __init__(self, start_date, end_date, calendar, backend, timedelta=[7,0,0,0]):
         self.calendar = calendar
         self.backend = backend
 
+        now = datetime.datetime.now().astimezone()
+        midnight = datetime.time(0, 0, 0)
+
         # parse start-date
         if not start_date:
-            self.start_date = datetime.datetime.today()
+            self.start_date = datetime.datetime.combine(now, midnight)
         else:
-            self.start_date = dateutil.parser.parse(start_date)
-        logger.info("Start Date: %s", self.start_date.astimezone())
+            self.start_date = dateutil.parser.parse(start_date).astimezone()
+        logger.info("Start Date: %s", self.start_date)
 
         # parse end-date
         if not end_date:
-            self.end_date = self.start_date + datetime.timedelta(7)
+            days,hours,minutes,seconds = timedelta
+            end = self.start_date + datetime.timedelta(days, hours, minutes, seconds)
+            self.end_date = datetime.datetime.combine(end, midnight)
         else:
             self.end_date = dateutil.parser.parse(end_date)
         logger.info("End Date: %s", self.end_date.astimezone())
@@ -348,6 +355,10 @@ def main():
                         help='End Date e.g. 2023-05-03. ' +
                              'Default is start-date + 1 week. ' +
                              '(00:00:00 respectively)')
+    parser.add_argument("--timedelta", '-t', default=None,
+                        help='timedelta is a string of days:hours:minutes:seconds ' +
+                             'which is added to the start-date. ' +
+                             'Default is 7 days (1 week) -> 7:0:0:0')
 
     # list: List installed jobs
     # send: To call the SendEmail backend
@@ -405,6 +416,14 @@ def main():
         calendar = icalendar.Calendar.from_ical(calendar.read())
         logger.debug("Read calendar file %s", calendarfile)
 
+    # timedelta from option or config
+    # if no end-date is given Wartungsplan will calculate +timedelta
+    if args.timedelta:
+        timedelta = args.timedelta
+    else:
+        timedelta = config['calendar']['timedelta']
+    timedelta = list(map(int, timedelta.split(':')))
+
     # call the function selected by action
     backend = None
     if args.action == 'list':
@@ -420,7 +439,7 @@ def main():
         raise NameError("Action not found")
 
     try:
-        wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend)
+        wartungsplan = Wartungsplan(args.start_date, args.end_date, calendar, backend, timedelta)
 
         return wartungsplan.run_backend()
     except Exception as err:
